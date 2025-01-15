@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver.UserHandler;
 
+/// <summary>
+/// this class will be the main class of the sudoku.
+/// </summary>
 public class Game
 {
     public void StartGame()
