@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 
-namespace SudokuSolver.ValidateInput;
+namespace SudokuSolver.Validation;
 
 /// <summary>
 /// This class validates the user's input for constructing a Sudoku board.
 /// </summary>
-public class ValidateInput
+public class ValidateInput<T>
 {
     private readonly string _userInput;
     private readonly int _boardSize;
@@ -25,21 +25,46 @@ public class ValidateInput
     }
 
     /// <summary>
-    /// Validates that the input contains only numbers.
+    /// Validates that the input contains only the type of it's kind . 
     /// </summary>
-    private void ValidateContainsOnlyDigits()
+    private void ValidateCharsInBoard()
     {
-        if (!_userInput.All(char.IsDigit))
-            throw new Exceptions.InvalidCharsInInputException("Input contains non numbers.");
+        
+        if (string.IsNullOrEmpty(_userInput) || this._userInput.Any(c => !CanConvertToType(c.ToString())))
+            throw new Exceptions.InvalidCharsInInputException("Input contains invalid characters for this board.");
+    }
+    /// <summary>
+    /// the function checks if a character is a type of the Class --> T (integer for example) 
+    /// </summary>
+    /// <param name="letter">the input of the function is a char from the user's input , represented by a string </param>
+    /// <returns></returns>
+    private bool CanConvertToType(string letter)
+    {
+        try
+        {
+            Convert.ChangeType(letter, typeof(T));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
-    /// Validates that all numbers in the input are within the allowed range of the sudoku Board.
+    /// Validates that all characters in the input are within the allowed range of the sudoku Board.
+    /// (for now it will be supporting integers, but it is flexible for changes if needed.)
     /// </summary>
-    private void ValidateNumbersInRange()
+    private void ValidateCharactersInRange()
     {
-        if (_userInput.Any(c => int.Parse(c.ToString()) < 0 || int.Parse(c.ToString()) > _boardSize))
-            throw new Exceptions.InvalidNumbersInBoardException("Input contains numbers outside the allowed range.");
+        foreach (char c in _userInput)
+        {
+            T val = (T)Convert.ChangeType(c.ToString(), typeof(T));
+            if (val is int intValue && (intValue < 0 || intValue > _boardSize))
+            {
+                throw new Exceptions.InvalidCharactersRangeForBoardException("Input contains characters outside the allowed range.");
+            }
+        }
     }
 
     /// <summary>
@@ -47,7 +72,7 @@ public class ValidateInput
     /// </summary>
     public void Validate()
     {
-        ValidateContainsOnlyDigits();
-        ValidateNumbersInRange();
+        ValidateCharsInBoard();
+        ValidateCharactersInRange();
     }
 }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver.Exceptions;
 
-public class InvalidNumbersInBoardException : SudokuExceptions
+public class InvalidCharactersRangeForBoardException : SudokuExceptions
 {
-    public InvalidNumbersInBoardException(string message) : base(message)
+    public InvalidCharactersRangeForBoardException(string message) : base(message)
     {
     }
 }

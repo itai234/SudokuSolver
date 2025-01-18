@@ -12,7 +12,7 @@ public class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An Error Happened : {ex.Message}");
+            Console.WriteLine(ex.Message);
         }
     }
 }
