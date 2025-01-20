@@ -24,10 +24,8 @@ public class Game
                 Validation.ValidateInput<int> validator = new Validation.ValidateInput<int>(input);
                 validator.Validate();
                 Board<int> board = new Board<int>(input);
-                board.displayBoard();
+                board.DisplayBoard();
                 Console.WriteLine("Success");
-
-
             }
             catch (Exception ex)
             {
