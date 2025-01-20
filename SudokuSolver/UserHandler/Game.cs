@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SudokuSolver.DataStructures.Board;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -22,7 +23,10 @@ public class Game
                 string input = Console.ReadLine();
                 Validation.ValidateInput<int> validator = new Validation.ValidateInput<int>(input);
                 validator.Validate();
+                Board<int> board = new Board<int>(input);
+                board.displayBoard();
                 Console.WriteLine("Success");
+
 
             }
             catch (Exception ex)

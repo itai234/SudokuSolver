@@ -6,24 +6,59 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver.DataStructures.Board;
 
-public class Cell<T> 
-{ 
-    private HashSet<T> _possibilities{ get; set; }
-    private bool _isPermanent = false;
+
+/// <summary>
+/// this class represents each cell of the board. 
+/// It is generic and flexible.
+/// In this class you will have all the actions you need to interact and change the Cells in the 
+/// Board.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class Cell<T>
+{
+    private HashSet<T> _possibilities;
+    private bool _isPermanent; 
 
     public Cell(IEnumerable<T> possibilities)
     {
-        _possibilities = new HashSet<T>(possibilities); 
+        _possibilities = possibilities.ToHashSet<T>();
+        _isPermanent = false;
+    }
+    public Cell(T value)
+    {
+        _possibilities = new HashSet<T>();
+        _possibilities.Add(value);  
+        _isPermanent = true; 
     }
 
+    public void SetValue(T value)
+    {
+        _isPermanent = true;
+        _possibilities.Clear(); 
+        _possibilities.Add(value);
+    }
     public bool IsPermanent()
     {
-        return _possibilities.Count == 1 && !_possibilities.Contains(default(T));
+        return _isPermanent || (_possibilities.Count == 1 && !_possibilities.Contains(default(T)));
     }
 
-    public void Removepossibility(T option)
+    public void RemovePossibility(T option)
     {
-        _possibilities.Remove(option);  
+        if(!_isPermanent) 
+            _possibilities.Remove(option);  
     }
+
+    public HashSet<T> GetPossibilities()
+    {
+        return _possibilities;
+    }
+    public T GetValue()
+    {
+        if (_isPermanent)
+            return _possibilities.First();
+        throw new InvalidOperationException("cant get Value when cell is not permenant");
+    }
+
+
 }
 
