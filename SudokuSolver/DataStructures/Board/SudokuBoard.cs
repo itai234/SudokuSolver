@@ -25,7 +25,7 @@ public class SudokuBoard<T> : Board<T>
 
     public SudokuBoard(string input) : base(input)
     {
-        ValidateBoard<T>.Validate(board,SudokuBoardUtilities.GameStateForValidation.BaseBoardInput); 
+        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardInput);
         rows = new HashSet<T>[Size];
         cols = new HashSet<T>[Size];
         boxes = new HashSet<T>[Size];
@@ -37,13 +37,13 @@ public class SudokuBoard<T> : Board<T>
             cols[i] = CreatePossibilitySet();
             boxes[i] = CreatePossibilitySet();
         }
-        
+
         UpdateBoard();
     }
     private HashSet<T> CreatePossibilitySet()
     {
         IEnumerable<T> range = GetRangeForInt(Convert.ToInt32(MIN_VALUE), Size);
-        return new HashSet<T>(range); 
+        return new HashSet<T>(range);
     }
     private void UpdateBoard()
     {
@@ -51,7 +51,7 @@ public class SudokuBoard<T> : Board<T>
             for (int j = 0; j < Size; j++)
                 if (board[i, j].IsPermanent())
                     RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
-        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);   
+        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
     }
     private void RemoveValueFromPossibilities(int row, int col, T value)
     {
@@ -59,13 +59,13 @@ public class SudokuBoard<T> : Board<T>
         cols[col].Remove(value);
         int boxIndex = GetBoxIndex(row, col);
         boxes[boxIndex].Remove(value);
-        UpdateRowPossibilities(row, col,value);
+        UpdateRowPossibilities(row, col, value);
         UpdateColPossibilities(row, col, value);
         UpdateBoxPossibilities(row, col, value);
     }
     private int GetBoxIndex(int row, int col)
     {
-        return Math.Min((row / boxSize) * boxSize + (col / boxSize),Size-1);
+        return Math.Min((row / boxSize) * boxSize + (col / boxSize), Size - 1);
     }
     public void UpdateRowPossibilities(int row, int col, T value)
     {
@@ -92,6 +92,31 @@ public class SudokuBoard<T> : Board<T>
             for (int j = startCol; j < startCol + boxSize; j++)
                 if (!board[i, j].IsPermanent())
                     board[i, j].RemovePossibility(value);
+    }
+    public bool CanPlaceValue(int row, int col, T value)
+    {
+        return !rows[row].Contains(value) && !cols[col].Contains(value) &&
+               !boxes[GetBoxIndex(row, col)].Contains(value) && !board[row, col].IsPermanent();
+    }
+    public void SetCellValue(int row, int col, T value)
+    {
+        board[row, col].SetValue(value);
+        RemoveValueFromPossibilities(row, col, value);
+    }
+    public (int row, int col)? FindCellWithLeastPossibilities()
+    {
+        int min = Convert.ToInt32(MAX_VALUE);
+        int? row = null;
+        int? col = null;
+        for (int i = 0; i < Size; i++)
+            for (int j = 0; j < Size; j++)
+                if (board[i, j].GetPossibilities().Count() < min)
+                {
+                    min = board[i, j].GetPossibilities().Count();
+                    row = i;
+                    col = j; 
+                }
+        return (row.HasValue && col.HasValue) ? (row.Value, col.Value) : null;
     }
 
 
