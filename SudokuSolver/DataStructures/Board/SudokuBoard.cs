@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using SudokuSolver.Utilities;
 namespace SudokuSolver.DataStructures.Board;
 
 
@@ -25,7 +25,7 @@ public class SudokuBoard<T> : Board<T>
 
     public SudokuBoard(string input) : base(input)
     {
-        ValidateBoard<T>.Validate(board); 
+        ValidateBoard<T>.Validate(board,SudokuBoardUtilities.GameStateForValidation.BaseBoardInput); 
         rows = new HashSet<T>[Size];
         cols = new HashSet<T>[Size];
         boxes = new HashSet<T>[Size];
@@ -51,7 +51,7 @@ public class SudokuBoard<T> : Board<T>
             for (int j = 0; j < Size; j++)
                 if (board[i, j].IsPermanent())
                     RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
-        ValidateBoard<T>.Validate(board);   
+        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);   
     }
     private void RemoveValueFromPossibilities(int row, int col, T value)
     {

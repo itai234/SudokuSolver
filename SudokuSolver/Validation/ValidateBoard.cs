@@ -2,17 +2,18 @@
 using SudokuSolver.Exceptions;
 using System;
 using System.Collections.Generic;
+using static SudokuSolver.Utilities.SudokuBoardUtilities;
 
 namespace SudokuSolver.Validation;
 
 public static class ValidateBoard<T>
 {
-    public static void Validate(Cell<T>[,] board)
+    public static void Validate(Cell<T>[,] board, GameStateForValidation state )
     {
-        ValidateBoardValues(board);
+        ValidateBoardValues(board,state);
     }
 
-    private static void ValidateBoardValues(Cell<T>[,] board)
+    private static void ValidateBoardValues(Cell<T>[,] board, GameStateForValidation state)
     {
         HashSet<T>[] rows = new HashSet<T>[board.GetLength(0)];
         HashSet<T>[] cols = new HashSet<T>[board.GetLength(0)];
@@ -34,35 +35,67 @@ public static class ValidateBoard<T>
                 if (board[row, col].IsPermanent())
                 {
                     T value = board[row, col].GetValue();
-                    CheckForDuplicatesInRow(rows, row, value);
-                    CheckForDuplicatesInColumn(cols, col, value);
-                    CheckForDuplicatesInBox(boxes, row, col, value);
+                    CheckForDuplicatesInRow(rows, row, value,state);
+                    CheckForDuplicatesInColumn(cols, col, value, state);
+                    CheckForDuplicatesInBox(boxes, row, col, value, state);
                 }
             }
         }
     }
 
-    private static void CheckForDuplicatesInRow(HashSet<T>[] rows, int row, T value)
+    private static void CheckForDuplicatesInRow(HashSet<T>[] rows, int row, T value, GameStateForValidation state)
     {
         if (rows[row].Contains(value))
-            throw new SameCharactersInRowException($"Illegal Board. Cannot put same characters -- {value} -- in the same row.");
+            DecideExceptionForDuplicatedInRow(value, state);
         rows[row].Add(value);
     }
 
-    private static void CheckForDuplicatesInColumn(HashSet<T>[] cols, int col, T value)
+    private static void CheckForDuplicatesInColumn(HashSet<T>[] cols, int col, T value, GameStateForValidation state)
     {
         if (cols[col].Contains(value))
-            throw new SameCharactersInColException($"Illegal Board. Cannot put same characters -- {value} -- in the same column.");
+            DecideExceptionForDuplicatedInCol(value, state);
         cols[col].Add(value);
     }
 
-    private static void CheckForDuplicatesInBox(HashSet<T>[] boxes, int row, int col, T value)
+    private static void CheckForDuplicatesInBox(HashSet<T>[] boxes, int row, int col, T value, GameStateForValidation state)
     {
         int boxSize = (int)Math.Sqrt(boxes.Length);
         int boxIndex = Math.Min((row / boxSize) * boxSize + (col / boxSize), boxes.Length - 1);
         if (boxes[boxIndex].Contains(value))
-            throw new SameCharactersInBoxException($"Illegal Board. Cannot put same characters -- {value} -- in the same box.");
+            DecideExceptionForDuplicatedInBox(value,state);
         boxes[boxIndex].Add(value);
+    }
+    
+    private static void DecideExceptionForDuplicatedInBox(T value,GameStateForValidation state)
+    {
+        switch (state)
+        {
+            case GameStateForValidation.BaseBoardInput:
+                throw new SameCharactersInBoxException($"Illegal Board. Cannot put same characters -- {value} -- in the same box.");
+            case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
+                throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
+        }
+    }
+    private static void DecideExceptionForDuplicatedInRow(T value,GameStateForValidation state)
+    {
+        switch (state)
+        {
+            case GameStateForValidation.BaseBoardInput:
+                throw new SameCharactersInRowException($"Illegal Board. Cannot put same characters -- {value} -- in the same row.");
+            case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
+                throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
+        }
+    }
+    private static void DecideExceptionForDuplicatedInCol(T value ,GameStateForValidation state)
+    {
+        switch (state)
+        {
+            case GameStateForValidation.BaseBoardInput:
+                throw new SameCharactersInColException($"Illegal Board. Cannot put same characters -- {value} -- in the same column.");
+            case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
+                throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
+        }
+
     }
 }
 
