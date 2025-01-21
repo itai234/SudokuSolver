@@ -37,8 +37,8 @@ public class SudokuBoard<T> : Board<T>
             cols[i] = CreatePossibilitySet();
             boxes[i] = CreatePossibilitySet();
         }
+        
         UpdateBoard();
-
     }
     private HashSet<T> CreatePossibilitySet()
     {
@@ -51,6 +51,7 @@ public class SudokuBoard<T> : Board<T>
             for (int j = 0; j < Size; j++)
                 if (board[i, j].IsPermanent())
                     RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
+        ValidateBoard<T>.Validate(board);   
     }
     private void RemoveValueFromPossibilities(int row, int col, T value)
     {
@@ -58,23 +59,26 @@ public class SudokuBoard<T> : Board<T>
         cols[col].Remove(value);
         int boxIndex = GetBoxIndex(row, col);
         boxes[boxIndex].Remove(value);
-        UpdateBoardPossibilities(row, col, value);
+        UpdateRowPossibilities(row, col,value);
+        UpdateColPossibilities(row, col, value);
+        UpdateBoxPossibilities(row, col, value);
     }
     private int GetBoxIndex(int row, int col)
     {
-        return (row / boxSize) * boxSize + (col / boxSize);
+        return Math.Min((row / boxSize) * boxSize + (col / boxSize),Size-1);
     }
-    public void UpdateBoardPossibilities(int row, int col, T value)
-    {
-        UpdateRowAndColPossibilities(row, col, value);
-        UpdateBoxPossibilities(row, col, value);
-    }
-    public void UpdateRowAndColPossibilities(int row, int col, T value)
+    public void UpdateRowPossibilities(int row, int col, T value)
     {
         for (int j = 0; j < Size; j++)
         {
             if (!board[row, j].IsPermanent())
                 board[row, j].RemovePossibility(value);
+        }
+    }
+    public void UpdateColPossibilities(int row, int col, T value)
+    {
+        for (int j = 0; j < Size; j++)
+        {
             if (!board[j, col].IsPermanent())
                 board[j, col].RemovePossibility(value);
         }
@@ -89,6 +93,7 @@ public class SudokuBoard<T> : Board<T>
                 if (!board[i, j].IsPermanent())
                     board[i, j].RemovePossibility(value);
     }
+
 
     public HashSet<T> GetRowPossibilities(int row)
     {

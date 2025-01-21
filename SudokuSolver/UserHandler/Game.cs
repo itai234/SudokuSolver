@@ -21,9 +21,11 @@ public class Game
             try
             {
                 string input = Console.ReadLine();
+                input = input.Replace(" ", "");
+
                 Validation.ValidateInput<int> validator = new Validation.ValidateInput<int>(input);
                 validator.Validate();
-                Board<int> board = new Board<int>(input);
+                SudokuBoard<int> board = new SudokuBoard<int>(input);
                 board.DisplayBoard();
                 Console.WriteLine("Success");
             }

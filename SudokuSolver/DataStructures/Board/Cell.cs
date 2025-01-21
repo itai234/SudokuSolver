@@ -45,18 +45,20 @@ public class Cell<T>
     public void RemovePossibility(T option)
     {
         if(!_isPermanent) 
-            _possibilities.Remove(option);  
+            _possibilities.Remove(option);
+        if (_possibilities.Count == 1)
+            _isPermanent = true;
     }
 
     public HashSet<T> GetPossibilities()
     {
         return _possibilities;
     }
-    public T GetValue()
+    public T? GetValue()
     {
         if (_isPermanent)
             return _possibilities.First();
-        throw new InvalidOperationException("cant get Value when cell is not permenant");
+        return default;
     }
 
 
