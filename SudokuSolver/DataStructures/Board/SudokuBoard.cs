@@ -113,7 +113,7 @@ public class SudokuBoard<T> : Board<T>
                 if (board[i, j].GetPossibilities().Count() < min)
                 {
                     min = board[i, j].GetPossibilities().Count();
-                    row = i;
+                    row = i; 
                     col = j; 
                 }
         return (row.HasValue && col.HasValue) ? (row.Value, col.Value) : null;
