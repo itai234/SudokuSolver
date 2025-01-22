@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using SudokuSolver.Utilities;
+using System.Reflection.Metadata.Ecma335;
 namespace SudokuSolver.DataStructures.Board;
 
 
@@ -17,9 +18,10 @@ namespace SudokuSolver.DataStructures.Board;
 /// <typeparam name="T"></typeparam>
 public class SudokuBoard<T> : Board<T>
 {
-    private HashSet<T>[] rows;
-    private HashSet<T>[] cols;
-    private HashSet<T>[] boxes;
+    public HashSet<T>[] rows {get;}
+    public HashSet<T>[] cols {get;}
+    public HashSet<T>[] boxes {get;}
+
     private readonly int boxSize;
 
 
@@ -40,7 +42,7 @@ public class SudokuBoard<T> : Board<T>
 
         UpdateBoard();
     }
-    private HashSet<T> CreatePossibilitySet()
+    public HashSet<T> CreatePossibilitySet()
     {
         IEnumerable<T> range = GetRangeForInt(Convert.ToInt32(MIN_VALUE), Size);
         return new HashSet<T>(range);
@@ -53,7 +55,7 @@ public class SudokuBoard<T> : Board<T>
                     RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
         ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
     }
-    private void RemoveValueFromPossibilities(int row, int col, T value)
+    public void RemoveValueFromPossibilities(int row, int col, T value)
     {
         rows[row].Remove(value);
         cols[col].Remove(value);
@@ -63,7 +65,7 @@ public class SudokuBoard<T> : Board<T>
         UpdateColPossibilities(row, col, value);
         UpdateBoxPossibilities(row, col, value);
     }
-    private int GetBoxIndex(int row, int col)
+    public int GetBoxIndex(int row, int col)
     {
         return Math.Min((row / boxSize) * boxSize + (col / boxSize), Size - 1);
     }
@@ -118,7 +120,13 @@ public class SudokuBoard<T> : Board<T>
                 }
         return (row.HasValue && col.HasValue) ? (row.Value, col.Value) : null;
     }
-
+    public bool IsBoardSolved()
+    {
+        for (int i = 0; i < Size; i++)
+            for (int j = 0 ; j < Size; j++)
+                if (!board[i,j].IsPermanent()) return false;
+        return true;    
+    }
 
     public HashSet<T> GetRowPossibilities(int row)
     {
@@ -134,6 +142,24 @@ public class SudokuBoard<T> : Board<T>
     {
         return boxes[boxIndex];
     }
+    public int GetBoxSize()
+    {
+        return this.boxSize;
+    }
+    public List<(int row ,int col)> GetCellsInBox(int boxIndex)
+    {
+        List<(int row, int col)> cells = new List<(int row, int col)>();
+        int startRow = (boxIndex / boxSize) * boxSize;
+        int startCol = (boxIndex / boxSize) * boxSize;
 
+        for (int row = startRow; row < startRow + boxSize; row++)
+        {
+            for (int col = startCol; col < startCol + boxSize; col++)
+            {
+                cells.Add((row, col));
+            }
+        }
+        return cells;
+    }
 }
 

@@ -1,4 +1,5 @@
 ﻿using SudokuSolver.DataStructures.Board;
+using SudokuSolver.Solve;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,7 +28,17 @@ public class Game
                 validator.Validate();
                 SudokuBoard<int> board = new SudokuBoard<int>(input);
                 board.DisplayBoard();
-                Console.WriteLine("Success");
+                SolverManager<int> solver = new SolverManager<int>(board);
+                HumanTechniques<int> humanTec = new HumanTechniques<int>();
+                solver.AddTechnique(humanTec);
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                solver.SolveBoard();
+                watch.Stop();
+                var time = watch.ElapsedMilliseconds;
+                Console.WriteLine("\n\n\n\n");
+                Console.WriteLine($"Took {time} miliseconds ");
+
+                board.DisplayBoard();
             }
             catch (Exception ex)
             {

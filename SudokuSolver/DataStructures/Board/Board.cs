@@ -11,8 +11,8 @@ namespace SudokuSolver.DataStructures.Board;
 
 public class Board<T>
 {
-    protected Cell<T>[,] board { get; set; }
-    protected int Size { get; }
+    public Cell<T>[,] board { get; protected set; }
+    public int Size { get; }
 
     protected readonly T MIN_VALUE;
     protected readonly T MAX_VALUE;
