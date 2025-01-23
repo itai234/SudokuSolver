@@ -18,9 +18,9 @@ namespace SudokuSolver.DataStructures.Board;
 /// <typeparam name="T"></typeparam>
 public class SudokuBoard<T> : Board<T>
 {
-    public HashSet<T>[] rows {get;}
-    public HashSet<T>[] cols {get;}
-    public HashSet<T>[] boxes {get;}
+    public HashSet<T>[] rows { get; }
+    public HashSet<T>[] cols { get; }
+    public HashSet<T>[] boxes { get; }
 
     private readonly int boxSize;
 
@@ -55,50 +55,72 @@ public class SudokuBoard<T> : Board<T>
                     RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
         ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
     }
-    public void RemoveValueFromPossibilities(int row, int col, T value)
+    public bool UpdateBoardAfterTechnique() 
     {
-        rows[row].Remove(value);
-        cols[col].Remove(value);
+        bool didchange = false;
+        for (int i = 0; i < Size; i++)
+            for (int j = 0; j < Size; j++)
+                if (board[i, j].IsPermanent())
+                    didchange = didchange |  RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
+        return didchange;
+    }
+    public bool RemoveValueFromPossibilities(int row, int col, T value)
+    {
+        bool didchange = false;
+        if (rows[row].Remove(value)) didchange = true;
+        if (cols[col].Remove(value)) didchange = true;
+
         int boxIndex = GetBoxIndex(row, col);
-        boxes[boxIndex].Remove(value);
-        UpdateRowPossibilities(row, col, value);
-        UpdateColPossibilities(row, col, value);
-        UpdateBoxPossibilities(row, col, value);
+        if (boxes[boxIndex].Remove(value)) didchange = true;
+
+        if (UpdateRowPossibilities(row, col, value)) didchange = true;
+        if (UpdateColPossibilities(row, col, value)) didchange = true;
+        if (UpdateBoxPossibilities(row, col, value)) didchange = true;
+
+        return didchange;
     }
     public int GetBoxIndex(int row, int col)
     {
         return Math.Min((row / boxSize) * boxSize + (col / boxSize), Size - 1);
     }
-    public void UpdateRowPossibilities(int row, int col, T value)
+    public bool UpdateRowPossibilities(int row, int col, T value)
     {
+        bool changed = false;
         for (int j = 0; j < Size; j++)
         {
             if (!board[row, j].IsPermanent())
-                board[row, j].RemovePossibility(value);
+                if(board[row, j].RemovePossibility(value)) 
+                    changed = true;
         }
+        return changed;
     }
-    public void UpdateColPossibilities(int row, int col, T value)
+    public bool UpdateColPossibilities(int row, int col, T value)
     {
+        bool changed = false;
         for (int j = 0; j < Size; j++)
         {
             if (!board[j, col].IsPermanent())
-                board[j, col].RemovePossibility(value);
+               if( board[j, col].RemovePossibility(value)) changed = true;
         }
+        return changed;
     }
-    public void UpdateBoxPossibilities(int row, int col, T value)
+    public bool UpdateBoxPossibilities(int row, int col, T value)
     {
+        bool changed = false;
+
         int startRow = (row / boxSize) * boxSize;
         int startCol = (col / boxSize) * boxSize;
 
         for (int i = startRow; i < startRow + boxSize; i++)
             for (int j = startCol; j < startCol + boxSize; j++)
                 if (!board[i, j].IsPermanent())
-                    board[i, j].RemovePossibility(value);
+                    if (board[i, j].RemovePossibility(value)) changed = true ;
+        return changed;
     }
     public bool CanPlaceValue(int row, int col, T value)
     {
-        return !rows[row].Contains(value) && !cols[col].Contains(value) &&
-               !boxes[GetBoxIndex(row, col)].Contains(value) && !board[row, col].IsPermanent();
+        return rows[row].Contains(value) && cols[col].Contains(value) &&
+               boxes[GetBoxIndex(row, col)].Contains(value) && !board[row, col].IsPermanent();
     }
     public void SetCellValue(int row, int col, T value)
     {
@@ -146,11 +168,11 @@ public class SudokuBoard<T> : Board<T>
     {
         return this.boxSize;
     }
-    public List<(int row ,int col)> GetCellsInBox(int boxIndex)
+    public List<(int row, int col)> GetCellsInBox(int boxIndex)
     {
         List<(int row, int col)> cells = new List<(int row, int col)>();
         int startRow = (boxIndex / boxSize) * boxSize;
-        int startCol = (boxIndex / boxSize) * boxSize;
+        int startCol = (boxIndex % boxSize) * boxSize; 
 
         for (int row = startRow; row < startRow + boxSize; row++)
         {

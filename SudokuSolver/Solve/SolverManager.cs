@@ -31,7 +31,6 @@ public class SolverManager<T>
             if (this.sudokuBoard.IsBoardSolved())
             {
                 Console.WriteLine("Solved!");
-                this.sudokuBoard.DisplayBoard();    
                 break;
             }
         }

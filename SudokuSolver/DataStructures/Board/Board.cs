@@ -32,6 +32,7 @@ public class Board<T>
         for (int i = 0; i < Size; i++)
             for (int j = 0; j < Size; j++)
                 SetIntValueForCell(input, i, j,range);
+
     }
 
     private void SetIntValueForCell(string input, int i, int j,IEnumerable<T> range )
@@ -42,6 +43,7 @@ public class Board<T>
             board[i, j] = new Cell<T>(range);
         else
             board[i, j] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)));
+        
     }
     protected IEnumerable<T> GetRangeForInt(int start, int end)
     {
@@ -49,15 +51,35 @@ public class Board<T>
     }
     public void DisplayBoard()
     {
-        // the display is temporary for debug.
+        int boxSize = (int)Math.Sqrt(Size);
+        string horizontalSeparator = new string('-', Size * 10 + boxSize - 1);
+
         for (int i = 0; i < Size; i++)
         {
+            if (i % boxSize == 0 && i != 0)
+                Console.WriteLine(horizontalSeparator);
+
             for (int j = 0; j < Size; j++)
             {
-                Console.Write(board[i, j].IsPermanent() ?  $"{board[i, j].GetValue()} " : "0 " );
+                if (j % boxSize == 0 && j != 0)
+                    Console.Write(" | ");
+
+                var cell = board[i, j];
+                if (cell.IsPermanent())
+                {
+                    Console.Write($" {cell.GetValue()}         ");
+                }
+                else
+                {
+                    string possibilities = string.Join("", cell.GetPossibilities());
+                    
+                    Console.Write($"{possibilities.PadRight(9)}");
+                }
             }
             Console.WriteLine();
         }
     }
+
+
 }
 

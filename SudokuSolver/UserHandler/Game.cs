@@ -37,7 +37,6 @@ public class Game
                 var time = watch.ElapsedMilliseconds;
                 Console.WriteLine("\n\n\n\n");
                 Console.WriteLine($"Took {time} miliseconds ");
-
                 board.DisplayBoard();
             }
             catch (Exception ex)

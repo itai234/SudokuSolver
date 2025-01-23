@@ -27,7 +27,7 @@ public class Cell<T>
     public Cell(T value)
     {
         _possibilities = new HashSet<T>();
-        _possibilities.Add(value);  
+        _ = _possibilities.Add(value);
         _isPermanent = true; 
     }
 
@@ -39,20 +39,23 @@ public class Cell<T>
     }
     public bool IsPermanent()
     {
-        return _isPermanent || (_possibilities.Count == 1 && !_possibilities.Contains(default(T)));
+        return _isPermanent;
     }
 
-    public void RemovePossibility(T option)
+    public bool RemovePossibility(T option)
     {
-        if(!_isPermanent) 
-            _possibilities.Remove(option);
+        bool updated = false;
+        if(!_isPermanent)
+           if( _possibilities.Remove(option)) updated = true;
         if (_possibilities.Count == 1)
             _isPermanent = true;
+        return updated;
     }
 
     public HashSet<T> GetPossibilities()
     {
-        return _possibilities;
+        HashSet<T> result = new HashSet<T>(_possibilities);
+        return result;
     }
     public T? GetValue()
     {
