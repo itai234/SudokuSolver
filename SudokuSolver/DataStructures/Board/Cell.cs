@@ -17,7 +17,9 @@ namespace SudokuSolver.DataStructures.Board;
 public class Cell<T>
 {
     private HashSet<T> _possibilities;
-    private bool _isPermanent; 
+    private bool _isPermanent;
+    private int row;
+    private int col;    
 
     /// <summary>
     /// this is one of the constructors , it will get all the possibilities in range and 
@@ -26,10 +28,12 @@ public class Cell<T>
     /// this constructor will be called for cells that the value inputed for them is 0 (for ints) .
     /// </summary>
     /// <param name="possibilities"> range of the options</param>
-    public Cell(IEnumerable<T> possibilities)
+    public Cell(IEnumerable<T> possibilities, int row , int col )
     {
         _possibilities = possibilities.ToHashSet<T>();
         _isPermanent = false;
+        this.row = row;
+        this.col = col; 
     }
     /// <summary>
     ///  this is the second constructor , it will get one value
@@ -38,11 +42,13 @@ public class Cell<T>
     /// this constructor will be called for cells that the value inputed for them is not 0 (for ints) .
     /// </summary>
     /// <param name="value">value inputed from the user (char from the string input)</param>
-    public Cell(T value)
+    public Cell(T value, int row , int col )
     {
         _possibilities = new HashSet<T>();
         _ = _possibilities.Add(value);
-        _isPermanent = true; 
+        _isPermanent = true;
+        this.row = row;
+        this.col = col;
     }
 
     /// <summary>
@@ -83,6 +89,14 @@ public class Cell<T>
         return updated;
     }
 
+
+    public void SetPossibilities(IEnumerable<T> possibilities)
+    {
+        _possibilities.Clear();
+        _possibilities = possibilities.ToHashSet();
+        _isPermanent = false;
+    }
+
     /// <summary>
     /// returns Hashset of the possibilities of the cell.
     /// </summary>
@@ -102,6 +116,15 @@ public class Cell<T>
         if (_isPermanent)
             return _possibilities.First();
         return default;
+    }
+
+    public int GetRow()
+    {
+        return this.row;
+    }
+    public int GetCol()
+    {
+        return this.col;
     }
 
 

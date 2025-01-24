@@ -30,7 +30,9 @@ public class Game
                 board.DisplayBoard();
                 SolverManager<int> solver = new SolverManager<int>(board);
                 HumanTechniques<int> humanTec = new HumanTechniques<int>();
+                ComputerTechniques<int> ComputerTec = new ComputerTechniques<int>();
                 solver.AddTechnique(humanTec);
+                solver.AddTechnique(ComputerTec);
                 var watch = System.Diagnostics.Stopwatch.StartNew();
                 solver.SolveBoard();
                 watch.Stop();

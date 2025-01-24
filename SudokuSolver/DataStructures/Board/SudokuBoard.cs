@@ -69,6 +69,7 @@ public class SudokuBoard<T> : Board<T>
             for (int j = 0; j < Size; j++)
                 if (board[i, j].IsPermanent())
                     didchange = didchange | RemoveValueFromPossibilities(i, j, board[i, j].GetValue());
+
         ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
         return didchange;
     }
@@ -270,5 +271,71 @@ public class SudokuBoard<T> : Board<T>
         }
         return cells;
     }
+
+    /// <summary>
+    /// the function saves the board's state in a dictionary that it's key is an location in the board
+    /// and its value is the possiblities that location had . 
+    /// </summary>
+    /// <returns> returns the dictionary containing the possibilities of the board cells that are not permanent.</returns>
+    public Dictionary<(int row, int col), HashSet<T>> SaveBoardState()
+    {
+        Dictionary<(int row, int col), HashSet<T>> stateForBoard = new Dictionary<(int row, int col), HashSet<T>>();
+        for (int row = 0; row< Size; row++ )
+        {
+            for(int col = 0; col < Size; col++)
+            {
+                if(!board[row, col].IsPermanent())
+                {
+                    stateForBoard[(row,col)] = board[row, col].GetPossibilities(); 
+                }
+            }
+        }
+        return stateForBoard;
+    }
+    public HashSet<T>[] SaveRowsState()
+    {
+        return rows.Select(set => new HashSet<T>(set)).ToArray();
+    }
+    public HashSet<T>[] SaveColsState()
+    {
+        return cols.Select(set => new HashSet<T>(set)).ToArray();
+    }
+
+    public HashSet<T>[] SaveBoxesState()
+    {
+        return boxes.Select(set => new HashSet<T>(set)).ToArray();
+    }
+    /// <summary>
+    /// the function restores the board state , with the state dictionary that it has as input ,
+    /// it restores each cell in it.
+    /// </summary>
+    /// <param name="state"> a certain board state represented by dictionary of location,possibilities.</param>
+    public void RestoreBoardState(Dictionary<(int row, int col), HashSet<T>> state)
+    {
+        foreach (var element in state)
+        {
+            var (row, col) = element.Key;
+            HashSet<T> possibilities = element.Value;
+            board[row, col].SetPossibilities(possibilities);
+        }
+    }
+    public void RestorePropertiesState(HashSet<T>[] rows, HashSet<T>[] cols, HashSet<T>[] boxes)
+    {
+        for (int i = 0; i < this.rows.Length; i++)
+        {
+            this.rows[i] = new HashSet<T>(rows[i]);
+        }
+
+        for (int i = 0; i < this.cols.Length; i++)
+        {
+            this.cols[i] = new HashSet<T>(cols[i]);
+        }
+
+        for (int i = 0; i < this.boxes.Length; i++)
+        {
+            this.boxes[i] = new HashSet<T>(boxes[i]);
+        }
+    }
+
 }
 

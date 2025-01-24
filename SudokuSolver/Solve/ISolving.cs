@@ -14,7 +14,7 @@ namespace SudokuSolver.Solve;
 /// <typeparam name="T"></typeparam>
 public interface ISolving<T>
 {
-    public void Solve();
+    public bool Solve();
     public void SetBoard(SudokuBoard<T> sudokuBoard);
 
 }

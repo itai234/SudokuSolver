@@ -34,21 +34,22 @@ public class HumanTechniques<T> : ISolving<T>
     /// main function to call all the solving techniques .
     /// and validate the board
     /// </summary>
-    public void Solve()
+    public bool Solve()
     {
-        
+        bool didChange = false; 
         bool changed = false;
         if (this.sudokuBoard.IsBoardSolved())
-            return;
+            return true;
         do
         {
             changed = sudokuBoard.UpdateBoard()
                 || LockedCandidatesBlockWithinRowOrCol()
                 || LockedCandidatesRowOrColWithinBox();
-            Validation.ValidateBoard<T>.Validate(
+            didChange = didChange | changed;
+           Validation.ValidateBoard<T>.Validate(
             sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
         } while (changed && !sudokuBoard.IsBoardSolved());
-
+        return didChange;
     }
     /// <summary>
     /// the function checks if there are locked candidates block in a row or a column 

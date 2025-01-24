@@ -64,9 +64,9 @@ public class Board<T>
         char currentChar = input[i * Size + j];
         int number = int.Parse(currentChar.ToString());
         if (number == 0)      
-            board[i, j] = new Cell<T>(range);
+            board[i, j] = new Cell<T>(range,i,j);
         else
-            board[i, j] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)));
+            board[i, j] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)),i,j);
         
     }
     /// <summary>
@@ -85,7 +85,7 @@ public class Board<T>
     public void DisplayBoard()
     {
         int boxSize = (int)Math.Sqrt(Size);
-        string horizontalSeparator = new string('-', Size * 10 + boxSize - 1);
+        string horizontalSeparator = new string('-', Size*3  + boxSize - 1);
 
         for (int i = 0; i < Size; i++)
         {
@@ -100,13 +100,11 @@ public class Board<T>
                 var cell = board[i, j];
                 if (cell.IsPermanent())
                 {
-                    Console.Write($" {cell.GetValue()}         ");
+                    Console.Write($"{cell.GetValue()} ");
                 }
                 else
                 {
-                    string possibilities = string.Join("", cell.GetPossibilities());
-                    
-                    Console.Write($"{possibilities.PadRight(9)}");
+                    Console.Write("0 ");
                 }
             }
             Console.WriteLine();
