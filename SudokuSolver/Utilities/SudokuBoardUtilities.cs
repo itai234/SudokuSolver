@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver.Utilities;
 
+/// <summary>
+/// the function represents utilities for the sudoku that can be static.
+/// </summary>
 public static class SudokuBoardUtilities
 {
     public enum GameStateForValidation

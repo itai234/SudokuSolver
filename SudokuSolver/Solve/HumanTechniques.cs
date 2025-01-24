@@ -7,12 +7,22 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver.Solve;
 
+/// <summary>
+/// this class will represent the human techniques to solve the board
+/// and this class inherits from the general ISolving interface that represents the solving techniques
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class HumanTechniques<T> : ISolving<T>
 {
     private SudokuBoard<T> sudokuBoard;
     private int boxSize;
     HashSet<T> possibilities;
 
+    /// <summary>
+    /// the function sets the sudoku board property.
+    /// and sets the possibilities and box size also.
+    /// </summary>
+    /// <param name="sudokuBoard"> sudoku board class instance</param>
     public void SetBoard(SudokuBoard<T> sudokuBoard)
     {
         this.sudokuBoard = sudokuBoard;
@@ -20,6 +30,10 @@ public class HumanTechniques<T> : ISolving<T>
         possibilities = sudokuBoard.CreatePossibilitySet();
     }
 
+    /// <summary>
+    /// main function to call all the solving techniques .
+    /// and validate the board
+    /// </summary>
     public void Solve()
     {
         
@@ -28,15 +42,19 @@ public class HumanTechniques<T> : ISolving<T>
             return;
         do
         {
-            changed = sudokuBoard.UpdateBoardAfterTechnique()
-                       || LockedCandidatesBlockWithinRowOrCol()
-                       || LockedCandidatesRowOrColWithinBox();
+            changed = sudokuBoard.UpdateBoard()
+                || LockedCandidatesBlockWithinRowOrCol()
+                || LockedCandidatesRowOrColWithinBox();
+            Validation.ValidateBoard<T>.Validate(
+            sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
         } while (changed && !sudokuBoard.IsBoardSolved());
 
-          Validation.ValidateBoard<T>.Validate(
-          sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
     }
-
+    /// <summary>
+    /// the function checks if there are locked candidates block in a row or a column 
+    /// this is the main function , we loop through the rows and check foreach candidate in the possibilities.
+    /// </summary>
+    /// <returns> returns true if changes were made </returns>
     public bool LockedCandidatesBlockWithinRowOrCol()
     {
         HashSet<T> allPossibilities = sudokuBoard.CreatePossibilitySet();
@@ -52,7 +70,16 @@ public class HumanTechniques<T> : ISolving<T>
         }
         return didChangeRow || didChangeCol;
     }
-
+    /// <summary>
+    /// the function loops through the columns ( you can treat it as rows also ) 
+    /// and if the value is non permenant and contains the candidate in his possibilities , 
+    /// we add it to dictionary that represent rows and columns or columns and rows.
+    /// after the loop is finished i call two helper functions , one for rows and one for cols.
+    /// </summary>
+    /// <param name="row"> the row to check (it can represent a certain column also ) </param>
+    /// <param name="candidate"> the candidate to check</param>
+    /// <param name="didChangeRow"> boolean to represent if changes were made to the board in the rows </param>
+    /// <param name="didChangeCol"> boolean to represent if changes were made to the board in the cols</param>
     public void LockedCandidatesBlockWithinRowOrColHelperFunction(int row, T candidate, ref bool didChangeRow, ref bool didChangeCol)
     {
         Dictionary<int, List<int>> RowAndCols = new Dictionary<int, List<int>>();
@@ -85,6 +112,16 @@ public class HumanTechniques<T> : ISolving<T>
         LockedCandidatesBlockWithinColHelperFunctionCondition(ColsAndRows, row, candidate, ref didChangeCol);
     }
 
+    /// <summary>
+    ///  the function check if this is indeed locked candidates inside the box (or block) 
+    ///  it checks if for the values in the dictionary if they are legal and all in the same row.
+    ///  if they are , it check if they all in the same box , and if this condition is true,
+    ///  it will remove all the possibilities for this certain candidate for the rest of the box excpet them.
+    /// </summary>
+    /// <param name="RowAndCols"> the dictionary that represent the Rows and columns</param>
+    /// <param name="row"> the row to check</param>
+    /// <param name="candidate"> the candidate to check </param>
+    /// <param name="didChangeRow"> boolean that represents if changes were made</param>
     public void LockedCandidatesBlockWithinRowHelperFunctionCondition(Dictionary<int, List<int>> RowAndCols, int row, T candidate, ref bool didChangeRow)
     {
         if (RowAndCols.ContainsKey(row) && RowAndCols[row].Count >= 1 && RowAndCols[row].Count <= boxSize)
@@ -112,7 +149,16 @@ public class HumanTechniques<T> : ISolving<T>
             }
         }
     }
-
+    /// <summary>
+    ///  the function check if this is indeed locked candidates inside the box (or block) 
+    ///  it checks if for the values in the dictionary if they are legal and all in the same column.
+    ///  if they are , it check if they all in the same box , and if this condition is true,
+    ///  it will remove all the possibilities for this certain candidate for the rest of the box excpet them.
+    /// </summary>
+    /// <param name="ColsAndRows"> the dictionary that represent the columns and Rows </param>
+    /// <param name="col"> the column to check</param>
+    /// <param name="candidate"> the candidate to check </param>
+    /// <param name="didChangeCol"> boolean that represents if changes were made</param>
     public void LockedCandidatesBlockWithinColHelperFunctionCondition(Dictionary<int, List<int>> ColsAndRows, int col, T candidate, ref bool didChangeCol)
     {
         if (ColsAndRows.ContainsKey(col) && ColsAndRows[col].Count >= 1 && ColsAndRows[col].Count <= boxSize && sudokuBoard.cols[col].Contains(candidate))
@@ -138,7 +184,12 @@ public class HumanTechniques<T> : ISolving<T>
             }
         }
     }
-
+    /// <summary>
+    /// removes a possibility from a cell and updates the board if that cell is permanent after the possibility is removed.
+    /// </summary>
+    /// <param name="row"> row of the cell</param>
+    /// <param name="col"> column of the cell</param>
+    /// <param name="value"> possibility to remvoe</param>
     public void RemoveCellPossibilityAndUpdate(int row, int col, T value)
     {
         if (sudokuBoard.board[row, col].GetPossibilities().Contains(value))
@@ -151,6 +202,14 @@ public class HumanTechniques<T> : ISolving<T>
             }
         }
     }
+    /// <summary>
+    /// the function checks for locked candidates in row or column that is inside a box, 
+    /// meaning if a certain box has a row or column that inside this row or column you have 2 or more possibilities of a value 
+    /// and only for this row/column you can remove this possibility for the rest of the row/column
+    /// the function loops through out all the boxes and for each box checks all the candidates in it , and calls the helper functions 
+    /// for rows, and cols. 
+    /// </summary>
+    /// <returns> returns true if changes were made </returns>
     public bool LockedCandidatesRowOrColWithinBox()
     {
         bool didChange = false;
@@ -180,6 +239,14 @@ public class HumanTechniques<T> : ISolving<T>
         return didChange;
     }
 
+    /// <summary>
+    /// the function checks first if the candidate cells are only in one row and only,
+    /// it they are it updates the rest of the row and remove that candidates possibility in them. 
+    /// </summary>
+    /// <param name="boxIndex"> a certain box index inside the sudoku board </param>
+    /// <param name="candidate"> a value to check inside the box </param>
+    /// <param name="candidateCells"> a list that represents each cell in the box .</param>
+    /// <returns> return true if changes were made .</returns>
     public bool LockedCandidatesRowWithinBox(int boxIndex, T candidate, List<(int row, int col)> candidateCells)
     {
         bool didChange = false;
@@ -205,6 +272,14 @@ public class HumanTechniques<T> : ISolving<T>
         return didChange;
     }
 
+    /// <summary>
+    /// the function checks first if the candidate cells are only in one column and only,
+    /// it they are it updates the rest of the column and remove that candidates possibility in them. 
+    /// </summary>
+    /// <param name="boxIndex"> a certain box index inside the sudoku board </param>
+    /// <param name="candidate"> a value to check inside the box </param>
+    /// <param name="candidateCells"> a list that represents each cell in the box .</param>
+    /// <returns> return true if changes were made .</returns>
     public bool LockedCandidatesColWithinBox(int boxIndex, T candidate, List<(int row, int col)> candidateCells)
     {
         bool didChange = false;
@@ -227,8 +302,4 @@ public class HumanTechniques<T> : ISolving<T>
         }
         return didChange;
     }
-
-
-
-
 }

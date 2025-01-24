@@ -6,13 +6,27 @@ using static SudokuSolver.Utilities.SudokuBoardUtilities;
 
 namespace SudokuSolver.Validation;
 
+/// <summary>
+///  the function validates the board and if it is not valid it will throw an exception.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public static class ValidateBoard<T>
 {
+    /// <summary>
+    ///  main constructor that receives the board and the game state ( for deciding which exceptions to throw)
+    /// </summary>
+    /// <param name="board"> the board of the game </param>
+    /// <param name="state"> the game state (before starting or after starting the solving)</param>
     public static void Validate(Cell<T>[,] board, GameStateForValidation state )
     {
         ValidateBoardValues(board,state);
     }
 
+    /// <summary>
+    /// main function to validate the board , it loops through the board and for each cell checks if it is valid.
+    /// </summary>
+    /// <param name="board"> board of the sudoku </param>
+    /// <param name="state"> game state </param>
     private static void ValidateBoardValues(Cell<T>[,] board, GameStateForValidation state)
     {
         HashSet<T>[] rows = new HashSet<T>[board.GetLength(0)];
@@ -43,6 +57,13 @@ public static class ValidateBoard<T>
         }
     }
 
+    /// <summary>
+    /// checks for duplicate in a cetain row.
+    /// </summary>
+    /// <param name="rows">hashset that reprsents the a certain row values</param>
+    /// <param name="row"> the row to check</param>
+    /// <param name="value"> the value to check if it is duplicated.</param>
+    /// <param name="state"> the game state to decide exception </param>
     private static void CheckForDuplicatesInRow(HashSet<T>[] rows, int row, T value, GameStateForValidation state)
     {
         if (rows[row].Contains(value))
@@ -50,13 +71,27 @@ public static class ValidateBoard<T>
         rows[row].Add(value);
     }
 
+    /// <summary>
+    /// checks for duplicate in a cetain column.
+    /// </summary>
+    /// <param name="cols">hashset that reprsents the a certain col values</param>
+    /// <param name="col"> the column to check</param>
+    /// <param name="value"> the value to check if it is duplicated.</param>
+    /// <param name="state"> the game state to decide exception </param>
     private static void CheckForDuplicatesInColumn(HashSet<T>[] cols, int col, T value, GameStateForValidation state)
     {
         if (cols[col].Contains(value))
             DecideExceptionForDuplicatedInCol(value, state);
         cols[col].Add(value);
     }
-
+    /// <summary>
+    /// checks for duplicate in a cetain box.
+    /// </summary>
+    /// <param name="boxes">hashset that reprsents the a certain box values</param>
+    /// <param name="row"> the row to check</param>
+    /// <param name="col"> the column to check</param>
+    /// <param name="value"> the value to check if it is duplicated.</param>
+    /// <param name="state"> the game state to decide exception </param>
     private static void CheckForDuplicatesInBox(HashSet<T>[] boxes, int row, int col, T value, GameStateForValidation state)
     {
         int boxSize = (int)Math.Sqrt(boxes.Length);
@@ -66,6 +101,13 @@ public static class ValidateBoard<T>
         boxes[boxIndex].Add(value);
     }
     
+    /// <summary>
+    /// decides which exception to throw if there are duplicates.
+    /// </summary>
+    /// <param name="value"> the value that is duplicated.</param>
+    /// <param name="state"> the game state </param>
+    /// <exception cref="SameCharactersInBoxException"> if the same characters are in the same box at the begining</exception>
+    /// <exception cref="UnsolvableBoardException"> if the board is unsolvable </exception>
     private static void DecideExceptionForDuplicatedInBox(T value,GameStateForValidation state)
     {
         switch (state)
@@ -76,6 +118,13 @@ public static class ValidateBoard<T>
                 throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
         }
     }
+    /// <summary>
+    /// decides which exception to throw if there are duplicates.
+    /// </summary>
+    /// <param name="value"> the value that is duplicated.</param>
+    /// <param name="state"> the game state </param>
+    /// <exception cref="SameCharactersInRowException"> if the same characters are in the same Row at the begining</exception>
+    /// <exception cref="UnsolvableBoardException"> if the board is unsolvable </exception>
     private static void DecideExceptionForDuplicatedInRow(T value,GameStateForValidation state)
     {
         switch (state)
@@ -86,6 +135,13 @@ public static class ValidateBoard<T>
                 throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
         }
     }
+    /// <summary>
+    /// decides which exception to throw if there are duplicates.
+    /// </summary>
+    /// <param name="value"> the value that is duplicated.</param>
+    /// <param name="state"> the game state </param>
+    /// <exception cref="SameCharactersInColException"> if the same characters are in the same Col at the begining</exception>
+    /// <exception cref="UnsolvableBoardException"> if the board is unsolvable </exception>
     private static void DecideExceptionForDuplicatedInCol(T value ,GameStateForValidation state)
     {
         switch (state)

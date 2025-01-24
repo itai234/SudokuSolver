@@ -23,7 +23,7 @@ public class Game
             {
                 string input = Console.ReadLine();
                 input = input.Replace(" ", "");
-
+                input = input.Replace('.', '0');
                 Validation.ValidateInput<int> validator = new Validation.ValidateInput<int>(input);
                 validator.Validate();
                 SudokuBoard<int> board = new SudokuBoard<int>(input);
