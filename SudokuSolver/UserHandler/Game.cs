@@ -18,7 +18,9 @@ public class Game
     {
         while (true)
         {
-            Console.WriteLine("Welcome to the my sudoku Solver!\n please enter you board: ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Welcome to the my sudoku Solver!\nPlease enter your board you want to solve as string: ");
+            Console.ResetColor();
             try
             {
                 string input = Console.ReadLine();
@@ -37,9 +39,9 @@ public class Game
                 solver.SolveBoard();
                 watch.Stop();
                 var time = watch.ElapsedMilliseconds;
-                Console.WriteLine("\n\n\n\n");
                 Console.WriteLine($"Took {time} miliseconds ");
                 board.DisplayBoard();
+                Console.WriteLine("\n");
             }
             catch (Exception ex)
             {
