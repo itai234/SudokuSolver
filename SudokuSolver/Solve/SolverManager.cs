@@ -40,7 +40,7 @@ public class SolverManager<T>
     /// main function to call for all the solving techniques and solve the board
     /// if the board is solved it will break and return.
     /// </summary>
-    public void SolveBoard()
+    public bool SolveBoard()
     {
         foreach (var technique in solvingTechniques)
         {
@@ -48,9 +48,11 @@ public class SolverManager<T>
             if (this.sudokuBoard.IsBoardSolved())
             {
                 Console.WriteLine("\n\nSolved!");
-                break;
+                return true;
+               
             }
         }
+        return false;
     }
 }
 
