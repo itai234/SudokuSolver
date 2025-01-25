@@ -49,55 +49,57 @@ public class ComputerTechniques<T> : ISolving<T>
     }
     /// <summary>
     /// the function backtracks and uses brute forcing for the values, 
-    /// also using the human techniques to solve the board.
+    /// also using the human techniques to solve the board, and uses also special heuristics to help the solving process to be faster.
     /// </summary>
     /// <returns></returns>
     private bool BackTracking()
     {
-        
         if (sudokuBoard.IsBoardSolved())
             return true;
 
         var cell = sudokuBoard.FindCellWithLeastPossibilities();
         if (cell == null)
             return false;
-    
-        int Row = cell.Value.row;
-        int Col = cell.Value.col;
-        HashSet<T> cellPossibilities = sudokuBoard.board[Row, Col].GetPossibilities();
 
-        string CurrentState  = GetBoardState();
-        if (visitedStates.Contains(CurrentState))
+        int row = cell.Value.row;
+        int col = cell.Value.col;
+        HashSet<T> cellPossibilities = sudokuBoard.board[row, col].GetPossibilities();
+
+        List<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
+
+        string currentState = GetBoardState();
+        if (visitedStates.Contains(currentState))
             return false;
-        visitedStates.Add(CurrentState);
-       
-        foreach (T possibility in cellPossibilities)
+        visitedStates.Add(currentState);
+
+        foreach (T value in orderedValues)
         {
-            if (sudokuBoard.CanPlaceValue(Row, Col, possibility))
+            if (sudokuBoard.CanPlaceValue(row, col, value))
             {
                 var savedState = sudokuBoard.SaveBoardState();
                 var savedRows = sudokuBoard.SaveRowsState();
                 var savedCols = sudokuBoard.SaveColsState();
                 var savedBoxes = sudokuBoard.SaveBoxesState();
-                sudokuBoard.SetCellValue(Row, Col, possibility);
+                sudokuBoard.SetCellValue(row, col, value);
+
                 try
                 {
                     humanTechniques.Solve();
-                    if(sudokuBoard.IsBoardSolved()) return true;
+                    if (sudokuBoard.IsBoardSolved())
+                        return true;
                     if (BackTracking())
                         return true;
-
                 }
                 catch (Exception ex)
                 {
                 }
                 sudokuBoard.RestoreBoardState(savedState);
                 sudokuBoard.RestorePropertiesState(savedRows, savedCols, savedBoxes);
-
             }
         }
         return false;
     }
+
 
     /// <summary>
     /// the function returns a string representing the board state. 
@@ -111,10 +113,68 @@ public class ComputerTechniques<T> : ISolving<T>
         {
             for (int col = 0; col < sudokuBoard.Size; col++)
             {
-                boardString.Append(sudokuBoard.board[row, col].IsPermanent()? sudokuBoard.board[row, col].GetValue().ToString(): "0"); 
+                boardString.Append(sudokuBoard.board[row, col].IsPermanent() ? sudokuBoard.board[row, col].GetValue().ToString() : "0");
             }
         }
         return boardString.ToString();
+    }
+
+    /// <summary>
+    /// the function recieves a cell indexes and his possibillities of values , 
+    /// the function creates a list of the value constaints , and checks for each possibility
+    /// how many cells on his row/col/box contain it , and adds it to the list.
+    /// the list is after this sorted by the constainting count effect of each value,
+    /// and then you convert it to a list of only the values themselves.
+    /// </summary>
+    /// <param name="row"> the row of the cell </param>
+    /// <param name="col"> the column of the cell </param>
+    /// <param name="cellPossibilities"> the hashset of the possibilities of the cell</param>
+    /// <returns></returns>
+    private List<T> GetValuesOrderedByPriority(int row, int col, HashSet<T> cellPossibilities)
+    {
+        List<(T value, int constrainingCount)> valueConstraints = new List<(T, int)>();
+
+        foreach (T value in cellPossibilities)
+        {
+            if (sudokuBoard.CanPlaceValue(row, col, value))
+            {
+                int constrainingCount = 0;
+                List<(int row, int col)> Cells = GetCellsBesidesItself(row, col);
+
+                foreach ((int row , int col) cell in Cells)
+                    if (!sudokuBoard.board[row, col].IsPermanent() &&
+                        sudokuBoard.board[row, col].GetPossibilities().Contains(value))
+                        constrainingCount++;
+
+                valueConstraints.Add((value, constrainingCount));
+            }
+        }
+
+        return valueConstraints.OrderBy(valueConst => valueConst.constrainingCount).Select(valueConst => valueConst.value).ToList();
+    }
+
+
+    /// <summary>
+    /// this function returns a list of cells indexes in the board that are on the row/col/box of the cell that the function gets.
+    /// </summary>
+    /// <param name="row"> the cell's row </param>
+    /// <param name="col"> the cell's col </param>
+    /// <returns></returns>
+    private List<(int row , int col)> GetCellsBesidesItself(int row, int col)
+    {
+        List<(int, int)> Cells = new List<(int, int)>();
+
+        for (int Col= 0; Col < sudokuBoard.Size; Col++)
+            if (Col != col) Cells.Add((row, Col));
+
+        for (int Row = 0; Row < sudokuBoard.Size; Row++)
+            if (Row != row) Cells.Add((Row, col));
+
+        foreach ((int rowIn, int colIn) in sudokuBoard.GetCellsInBox(sudokuBoard.GetBoxIndex(row, col)))
+            if (rowIn != row || colIn != col)
+                Cells.Add((rowIn, colIn));
+
+        return Cells;
     }
 }
 

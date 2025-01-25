@@ -45,12 +45,21 @@ public class Game
                 Console.ResetColor();
                 Console.WriteLine("\n");
             }
+            catch(EndOfStreamException ex)
+            {
+                Console.WriteLine("Try again.");
+            }
+            catch(ThreadInterruptedException ex)
+            {
+                Console.WriteLine("Try again.");
+            }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(ex.Message);
                 Console.ResetColor();
             }
+
         }
                 
     }
