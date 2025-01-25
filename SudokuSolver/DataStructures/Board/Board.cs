@@ -109,6 +109,8 @@ public class Board<T>
             }
             Console.WriteLine();
         }
+  
+
     }
 
 

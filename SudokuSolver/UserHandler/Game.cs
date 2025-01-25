@@ -40,7 +40,9 @@ public class Game
                 watch.Stop();
                 var time = watch.ElapsedMilliseconds;
                 Console.WriteLine($"Took {time} miliseconds ");
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 board.DisplayBoard();
+                Console.ResetColor();
                 Console.WriteLine("\n");
             }
             catch (Exception ex)

@@ -187,23 +187,90 @@ public class SudokuBoard<T> : Board<T>
     /// <summary>
     /// the function searches through out the board for the cell with the least options in it 
     /// and returns it , if nothing was found it returns null.
+    /// it the function finds more than 1 cell with the same least possibilities it will make a 
+    /// decision which cell to choose according to his Degree in the board.
     /// </summary>
     /// <returns></returns>
     public (int row, int col)? FindCellWithLeastPossibilities()
     {
-        int min = Convert.ToInt32(MAX_VALUE)+1;
-        int? row = null;
-        int? col = null;
-        for (int i = 0; i < Size; i++)
-            for (int j = 0; j < Size; j++)
-                if (!board[i,j].IsPermanent() &&board[i, j].GetPossibilities().Count() < min)
+
+        List<(int row, int col)> LeastPossibilitiesCellsList = new List<(int row, int col)>();
+        GetLeastPossibilities(ref  LeastPossibilitiesCellsList);
+
+        if (!LeastPossibilitiesCellsList.Any())
+        {
+            return null;  
+        }
+        if (LeastPossibilitiesCellsList.Count > 1)
+        {
+            int maxDegree = -1;
+            List<(int row, int col)> finalCellsList = new List<(int row, int col)>();
+
+            foreach ((int row, int col) in LeastPossibilitiesCellsList)
+            {
+                int degree = GetDegreeOfCell(row, col);
+                if (degree > maxDegree)
                 {
-                    min = board[i, j].GetPossibilities().Count();
-                    row = i; 
-                    col = j; 
+                    maxDegree = degree;
+                    finalCellsList.Clear(); 
+                    finalCellsList.Add((row, col));
                 }
-        return (row.HasValue && col.HasValue) ? (row.Value, col.Value) : null;
+                else if (degree == maxDegree)
+                {
+                    finalCellsList.Add((row, col)); 
+                }
+            }
+            return finalCellsList.First();
+        }
+        return LeastPossibilitiesCellsList.First() ;
     }
+    
+    /// <summary>
+    /// Gets as an input the empty list of tuples , and add to it the cells that have the least possibilities
+    /// </summary>
+    /// <param name="LeastPossibilitiesCellsList"> empty list </param>
+    public void GetLeastPossibilities(ref List<(int row, int col)> LeastPossibilitiesCellsList)
+    {
+        int min = Convert.ToInt32(MAX_VALUE) + 1;
+
+        for (int i = 0; i < Size; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                if (!board[i, j].IsPermanent())
+                {
+                    int possibilitiesCount = board[i, j].GetPossibilities().Count();
+
+                    if (possibilitiesCount < min)
+                    {
+                        LeastPossibilitiesCellsList.Clear();
+                        min = possibilitiesCount;
+                        LeastPossibilitiesCellsList.Add((i, j));
+                    }
+                    else if (possibilitiesCount == min)
+                    {
+                        LeastPossibilitiesCellsList.Add((i, j));
+                    }
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// returns the degree of a certain cell, meaning , returns the number of permanent elements 
+    /// there are in his row ,col or box. this is for the backtracking to work faster.
+    /// </summary>
+    /// <param name="row">the row of the cell</param>
+    /// <param name="col"> the column of the cell</param>
+    /// <returns></returns>
+    private int GetDegreeOfCell(int row, int col)
+    {
+        int degree = 0;
+        degree += Size - rows[row].Count();
+        degree += Size - cols[col].Count();
+        degree += Size - boxes[GetBoxIndex(row,col)].Count();
+        return degree;
+    }
+
     /// <summary>
     ///  returns true if all the cells in the boards are permanent.
     /// </summary>
