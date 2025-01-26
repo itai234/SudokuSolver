@@ -43,9 +43,9 @@ public class Board<T>
     private void initializeBoardForIntegers(string input)
     {
         IEnumerable<T> range = GetRangeForInt(Convert.ToInt32(MIN_VALUE), Size);
-        for (int i = 0; i < Size; i++)
-            for (int j = 0; j < Size; j++)
-                SetIntValueForCell(input, i, j,range);
+        for (int row = 0; row < Size; row++)
+            for (int col = 0; col < Size; col++)
+                SetIntValueForCell(input, row, col,range);
 
     }
 
@@ -56,17 +56,17 @@ public class Board<T>
     /// if its a number then the cell will be defined as "Permanent"
     /// </summary>
     /// <param name="input"> the string from the user's input</param>
-    /// <param name="i">represents the row that the cell is in it</param>
-    /// <param name="j"> represents the column that the cell is in it </param>
+    /// <param name="row">represents the row that the cell is in it</param>
+    /// <param name="col"> represents the column that the cell is in it </param>
     /// <param name="range"> the range of the numbers flexible to the board's size.</param>
-    private void SetIntValueForCell(string input, int i, int j,IEnumerable<T> range )
+    private void SetIntValueForCell(string input, int row, int col,IEnumerable<T> range )
     {
-        char currentChar = input[i * Size + j];
+        char currentChar = input[row * Size + col];
         int number = int.Parse(currentChar.ToString());
         if (number == 0)      
-            board[i, j] = new Cell<T>(range,i,j);
+            board[row, col] = new Cell<T>(range,row,col);
         else
-            board[i, j] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)),i,j);
+            board[row, col] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)),row,col);
         
     }
     /// <summary>
@@ -87,17 +87,17 @@ public class Board<T>
         int boxSize = (int)Math.Sqrt(Size);
         string horizontalSeparator = new string('-', Size*3  + boxSize - 1);
 
-        for (int i = 0; i < Size; i++)
+        for (int row = 0; row < Size; row++)
         {
-            if (i % boxSize == 0 && i != 0)
+            if (row % boxSize == 0 && row != 0)
                 Console.WriteLine(horizontalSeparator);
 
-            for (int j = 0; j < Size; j++)
+            for (int col = 0; col < Size; col++)
             {
-                if (j % boxSize == 0 && j != 0)
+                if (col % boxSize == 0 && col != 0)
                     Console.Write(" | ");
 
-                var cell = board[i, j];
+                var cell = board[row, col];
                 if (cell.IsPermanent())
                 {
                     Console.Write($"{cell.GetValue()} ");

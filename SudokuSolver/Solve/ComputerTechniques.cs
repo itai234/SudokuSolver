@@ -139,7 +139,7 @@ public class ComputerTechniques<T> : ISolving<T>
             if (sudokuBoard.CanPlaceValue(row, col, value))
             {
                 int constrainingCount = 0;
-                List<(int row, int col)> Cells = GetCellsBesidesItself(row, col);
+                List<(int row, int col)> Cells = sudokuBoard.GetCellsBesidesItself(row, col);
 
                 foreach ((int row , int col) cell in Cells)
                     if (!sudokuBoard.board[row, col].IsPermanent() &&
@@ -154,28 +154,7 @@ public class ComputerTechniques<T> : ISolving<T>
     }
 
 
-    /// <summary>
-    /// this function returns a list of cells indexes in the board that are on the row/col/box of the cell that the function gets.
-    /// </summary>
-    /// <param name="row"> the cell's row </param>
-    /// <param name="col"> the cell's col </param>
-    /// <returns></returns>
-    private List<(int row , int col)> GetCellsBesidesItself(int row, int col)
-    {
-        List<(int, int)> Cells = new List<(int, int)>();
-
-        for (int Col= 0; Col < sudokuBoard.Size; Col++)
-            if (Col != col) Cells.Add((row, Col));
-
-        for (int Row = 0; Row < sudokuBoard.Size; Row++)
-            if (Row != row) Cells.Add((Row, col));
-
-        foreach ((int rowIn, int colIn) in sudokuBoard.GetCellsInBox(sudokuBoard.GetBoxIndex(row, col)))
-            if (rowIn != row || colIn != col)
-                Cells.Add((rowIn, colIn));
-
-        return Cells;
-    }
+   
 }
 
 

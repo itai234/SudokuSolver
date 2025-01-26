@@ -43,8 +43,10 @@ public class HumanTechniques<T> : ISolving<T>
         do
         {
             changed = sudokuBoard.UpdateBoard()
-                || LockedCandidatesBlockWithinRowOrCol()
-                || LockedCandidatesRowOrColWithinBox();
+                 || ApplyNakedSets()
+                 || LockedCandidatesBlockWithinRowOrCol()
+                 || LockedCandidatesRowOrColWithinBox();
+
             didChange = didChange | changed;
            Validation.ValidateBoard<T>.Validate(
             sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
@@ -302,5 +304,157 @@ public class HumanTechniques<T> : ISolving<T>
             }
         }
         return didChange;
+    }
+
+
+
+    /// <summary>
+    /// main function to call when wanting to summon the naked sets checking.
+    /// the function checks from 2 pairs, to the board size -2 (included) .
+    /// </summary>
+    /// <returns> return true if changes were made .</returns>
+    private bool ApplyNakedSets()
+    {
+        bool didChange = false;
+        for (int size = 2; size < sudokuBoard.Size-1; size++)
+           didChange |= NakedSet(size);
+        return didChange;
+    }
+    /// <summary>
+    /// this function loops through the board size, and for each location , it will call the
+    /// main function to find the sets -> it sends her each iteration, for each location in the board size 
+    /// ( from 1 to the size of the board ) , all the rows,cols, and boxes cells.
+    /// </summary>
+    /// <param name="SetSize"> the size of the set to find (pairs, triples) ... </param>
+    /// <returns> returns true if changes in the board were made. </returns>
+    private bool NakedSet(int SetSize)
+    {
+        bool didChange = false;
+        for (int location = 0; location < sudokuBoard.Size; location++)
+        {
+            if (NakedSetFind(GetRowCells(location), SetSize))
+                didChange = true;
+            if (NakedSetFind(GetColumnCells(location), SetSize))
+                didChange = true;
+            if (NakedSetFind(GetBoxCells(location), SetSize))
+                didChange = true;
+        }
+        return didChange;
+    }
+
+    /// <summary>
+    /// This is the main function to find the naked sets.
+    /// The function takes an input a list of cells in a row/col/box and the set size (pairs, triples).
+    /// The function generates all the potential Sets of the row/col/box cells.
+    /// And for each Set it checks whether it is a valid set for naked sets ->
+    /// (A set of cells in which each possibility is unique to that set, meaning that no other cells in the same ->
+    /// row, column, or box can contain those possibilities.)
+    /// If a valid set is found , All the possibilities from this set will be removed from the other Cells 
+    /// int the row/col/box.
+    /// </summary>
+    /// <param name="cells"></param>
+    /// <param name="setSize"></param>
+    /// <returns></returns>
+    private bool NakedSetFind(List<Cell<T>> cells, int setSize)
+    {
+        bool didChange = false;
+        List<List<Cell<T>>> potentialSets = GetCombinations(cells, setSize);
+
+        foreach (List<Cell<T>> set in potentialSets)
+        {
+            HashSet<T> nakedCandidates = new HashSet<T>();
+
+            foreach (Cell<T> cell in set)
+                foreach (T possibility in cell.GetPossibilities())
+                   nakedCandidates.Add(possibility); 
+
+            if (nakedCandidates.Count() == setSize)
+                foreach (Cell<T> cell in cells)
+                    if (!set.Contains(cell))         
+                        foreach (T candidate in nakedCandidates)
+                            if (cell.RemovePossibility(candidate))
+                                didChange = true;  
+        }
+        return didChange;
+    }
+
+
+    /// <summary>
+    ///The function receives a list of Cells representing a row/col/box , 
+    ///and a setSize , the function will recursively generate all the sets of cells that are possibile
+    /// and return them.
+    /// </summary>
+    /// <param name="Cells"></param>
+    /// <param name="SetSize"></param>
+    /// <returns></returns>
+    private List<List<Cell<T>>> GetCombinations(List<Cell<T>> Cells, int SetSize)
+    {
+        List<List<Cell<T>>> combinations = new List<List<Cell<T>>>();
+
+        if (SetSize == 0)
+        {
+            combinations.Add(new List<Cell<T>>());
+            return combinations;
+        }
+
+        for (int i = 0; i <= Cells.Count - SetSize; i++)
+        {
+            //recursive call to find all the possibile combinations of the setsize -1 , from the remaining cells --> Cells.Skip(i + 1)
+            List<List<Cell<T>>> remainingCombinations = GetCombinations(Cells.Skip(i + 1).ToList(), SetSize - 1);
+
+            foreach (List<Cell<T>> combination in remainingCombinations)
+            {
+                List<Cell<T>> result = new List<Cell<T>> { Cells[i] };
+                result.AddRange(combination);
+                combinations.Add(result);
+            }
+        }
+        return combinations;
+    }
+
+
+    /// <summary>
+    /// the function returns a list of cells representing a certain Row.
+    /// </summary>
+    /// <param name="row"> a certain row </param>
+    /// <returns></returns>
+    private List<Cell<T>> GetRowCells(int row)
+    {
+        List<Cell<T>> cells = new List<Cell<T>>();
+        for (int col = 0; col < sudokuBoard.Size; col++)
+        {
+            cells.Add(sudokuBoard.board[row, col]);
+        }
+        return cells;
+    }
+
+
+    /// <summary>
+    /// the function returns a list of cells representing a certain Column
+    /// </summary>
+    /// <param name="col"> a certain column</param>
+    /// <returns></returns>
+    private List<Cell<T>> GetColumnCells(int col)
+    {
+        List<Cell<T>> cells = new List<Cell<T>>();
+        for (int row = 0; row < sudokuBoard.Size; row++)
+        {
+            cells.Add(sudokuBoard.board[row, col]);
+        }
+        return cells;
+    }
+    /// <summary>
+    /// the function returns a list of cells representing a certain box.
+    /// </summary>
+    /// <param name="boxIndex"> a certain box index.</param>
+    /// <returns></returns>
+    private List<Cell<T>> GetBoxCells(int boxIndex)
+    {
+        List<Cell<T>> cells = new List<Cell<T>>();
+        foreach ((int row, int col) in sudokuBoard.GetCellsInBox(boxIndex))
+        {
+            cells.Add(sudokuBoard.board[row, col]);
+        }
+        return cells;
     }
 }

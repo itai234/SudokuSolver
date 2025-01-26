@@ -33,11 +33,11 @@ public static class ValidateBoard<T>
         HashSet<T>[] cols = new HashSet<T>[board.GetLength(0)];
         HashSet<T>[] boxes = new HashSet<T>[board.GetLength(0)];
 
-        for (int i = 0; i < board.GetLength(0); i++)
+        for (int index = 0; index < board.GetLength(0); index++)
         {
-            rows[i] = new HashSet<T>();
-            cols[i] = new HashSet<T>();
-            boxes[i] = new HashSet<T>();
+            rows[index] = new HashSet<T>();
+            cols[index] = new HashSet<T>();
+            boxes[index] = new HashSet<T>();
         }
 
         for (int row = 0; row < board.GetLength(0); row++)

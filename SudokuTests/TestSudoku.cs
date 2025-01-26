@@ -39,6 +39,8 @@ public class Tests
     [Test]
     public void TestSolveLegalSudokus()
     {
+        long totalTime = 0;  
+        int solvedBoardsCount = 0;  
         foreach (string grid in SudokusBoards)
         {
             if (string.IsNullOrWhiteSpace(grid)) continue;
@@ -73,11 +75,16 @@ public class Tests
             }
             catch (Exception ex)
             {
-                //Assert.Fail($"exception: {ex.Message}\n for board : {grid}");
+                Assert.Fail($"exception: {ex.Message}\n for board : {grid}");
                 Console.WriteLine( $"exception: {ex.Message}\n for board : {grid}");
             }
             watch.Stop();
             var time = watch.ElapsedMilliseconds;
+            totalTime += time;  
+            if (solved)
+            {
+                solvedBoardsCount++; 
+            }
             //if (time > maxTimeForGrid)
             //{
             //    Assert.Fail($"solving the grid took too long: {time} milliseconds.");
@@ -86,6 +93,11 @@ public class Tests
 
             Assert.That(solved, Is.True, "Board was not solved successfully.");
             Assert.That(_SudokuBoard.IsBoardSolved(), Is.True, "Board is not fully solved.");
+        }
+        if (solvedBoardsCount > 0)
+        {
+            long avgTime = totalTime / solvedBoardsCount;  
+            Console.WriteLine($"Average Solving time for the boards: {avgTime} milliseconds.");
         }
     }
 }
