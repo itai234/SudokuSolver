@@ -29,7 +29,7 @@ public class ValidateInput<T>
     /// </summary>
     private void ValidateCharsInBoard()
     {
-        
+
         if (string.IsNullOrEmpty(_userInput) || this._userInput.Any(c => !CanConvertToType(c.ToString())))
             throw new Exceptions.InvalidCharsInInputException("Input contains invalid characters for this board.");
     }
@@ -42,7 +42,7 @@ public class ValidateInput<T>
     {
         try
         {
-            Convert.ChangeType(letter, typeof(T));
+            Convert.ChangeType(letter[0]-'0', typeof(T));
             return true;
         }
         catch
@@ -59,7 +59,7 @@ public class ValidateInput<T>
     {
         foreach (char c in _userInput)
         {
-            T val = (T)Convert.ChangeType(c.ToString(), typeof(T));
+            T val = (T)Convert.ChangeType(c.ToString()[0]-'0', typeof(T));
             if (val is int intValue && (intValue < 0 || intValue > _boardSize))
             {
                 throw new Exceptions.InvalidCharactersRangeForBoardException("Input contains characters outside the allowed range.");

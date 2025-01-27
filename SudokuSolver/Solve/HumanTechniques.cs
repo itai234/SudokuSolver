@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,9 +44,11 @@ public class HumanTechniques<T> : ISolving<T>
         do
         {
             changed = sudokuBoard.UpdateBoard()
-                 || ApplyNakedSets()
-                 || LockedCandidatesBlockWithinRowOrCol()
-                 || LockedCandidatesRowOrColWithinBox();
+                || HiddenSingle();
+                //|| ApplyNakedSets()
+              //  || LockedCandidatesBlockWithinRowOrCol()
+            //    || LockedCandidatesRowOrColWithinBox();
+
 
             didChange = didChange | changed;
            Validation.ValidateBoard<T>.Validate(
@@ -316,8 +319,8 @@ public class HumanTechniques<T> : ISolving<T>
     private bool ApplyNakedSets()
     {
         bool didChange = false;
-        for (int size = 2; size < sudokuBoard.Size-1; size++)
-           didChange |= NakedSet(size);
+        for (int SetSize = 2; SetSize < sudokuBoard.Size-1; SetSize++)
+           didChange |= NakedSet(SetSize);
         return didChange;
     }
     /// <summary>
@@ -368,9 +371,9 @@ public class HumanTechniques<T> : ISolving<T>
                 foreach (T possibility in cell.GetPossibilities())
                    nakedCandidates.Add(possibility); 
 
-            if (nakedCandidates.Count() == setSize)
+            if (nakedCandidates.Count() <= setSize)
                 foreach (Cell<T> cell in cells)
-                    if (!set.Contains(cell))         
+                    if (!cell.IsPermanent()&& !set.Contains(cell))         
                         foreach (T candidate in nakedCandidates)
                             if (cell.RemovePossibility(candidate))
                                 didChange = true;  
@@ -456,5 +459,47 @@ public class HumanTechniques<T> : ISolving<T>
             cells.Add(sudokuBoard.board[row, col]);
         }
         return cells;
+    }
+
+    private bool HiddenSingle()
+    {
+        bool didChange = false;
+        for (int location = 0; location < sudokuBoard.Size; location++)
+        {
+            if (HiddenSingleFind(GetRowCells(location)))
+                didChange = true;
+            if (HiddenSingleFind(GetColumnCells(location)))
+                didChange = true;
+            if (HiddenSingleFind(GetBoxCells(location)))
+                didChange = true;
+        }
+        return didChange;
+    }
+    public bool HiddenSingleFind(List<Cell<T>> Cells) 
+    {
+        bool didChange = false;
+        int row = 0, col = 0;
+        int count = 0; 
+        bool flag = false;
+
+        foreach(T option in sudokuBoard.CreatePossibilitySet())
+        {
+            count = 0;
+            flag = true;
+            foreach (Cell<T> cell in Cells)
+            {
+                if (cell.IsPermanent() && cell.GetValue().Equals(option))
+                    flag = false;
+                if(!cell.IsPermanent() && cell.GetPossibilities().Contains(option))
+                {
+                    count++;
+                    row = cell.GetRow();    
+                    col = cell.GetCol();    
+                }
+            }
+            if(count == 1 && flag)
+                sudokuBoard.SetCellValue(row,col,option);     
+        }
+        return false;
     }
 }

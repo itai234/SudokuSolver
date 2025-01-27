@@ -3,6 +3,7 @@ using SudokuSolver.Solve;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ public class Game
 {
     public void StartGame()
     {
+        Stopwatch stopwatch = new Stopwatch();  
         Utilities.SudokuBoardUtilities.EngineTrick();
         while (true)
         {
@@ -36,10 +38,11 @@ public class Game
                 ComputerTechniques<int> ComputerTec = new ComputerTechniques<int>();
                 solver.AddTechnique(humanTec);
                 solver.AddTechnique(ComputerTec);
-                var watch = System.Diagnostics.Stopwatch.StartNew();
+                stopwatch.Reset();  
+                stopwatch.Start();
                 bool Solved = solver.SolveBoard();
-                watch.Stop();
-                var time = watch.ElapsedMilliseconds;
+                stopwatch.Stop();   
+                var time = stopwatch.ElapsedMilliseconds;   
                 Console.WriteLine("\n Solved The Board!\n");
                 Console.WriteLine($"Took {time} miliseconds ");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -55,10 +58,26 @@ public class Game
             {
                 Console.WriteLine("Try again.");
             }
+            catch(IOException ex)
+            {
+                Console.WriteLine("Try again.");
+            }
+            catch (OutOfMemoryException ex)
+            {
+                Console.WriteLine("Out of memory");
+
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine("Input too long");
+            }
             catch (Exception ex)
             {
+                stopwatch.Stop();
+                var time = stopwatch.ElapsedMilliseconds;
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(ex.Message);
+                Console.WriteLine($"Took {time} miliseconds. ");
                 Console.ResetColor();
             }
 

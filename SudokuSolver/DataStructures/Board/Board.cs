@@ -62,7 +62,7 @@ public class Board<T>
     private void SetIntValueForCell(string input, int row, int col,IEnumerable<T> range )
     {
         char currentChar = input[row * Size + col];
-        int number = int.Parse(currentChar.ToString());
+        int number = currentChar - '0';
         if (number == 0)      
             board[row, col] = new Cell<T>(range,row,col);
         else

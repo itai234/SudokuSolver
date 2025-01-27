@@ -19,7 +19,6 @@ public class ComputerTechniques<T> : ISolving<T>
 {
     private SudokuBoard<T> sudokuBoard;
     HumanTechniques<T> humanTechniques;
-    private HashSet<string> visitedStates = new HashSet<string>();
 
 
     /// <summary>
@@ -67,10 +66,6 @@ public class ComputerTechniques<T> : ISolving<T>
 
         List<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
 
-        string currentState = GetBoardState();
-        if (visitedStates.Contains(currentState))
-            return false;
-        visitedStates.Add(currentState);
 
         foreach (T value in orderedValues)
         {
@@ -101,23 +96,7 @@ public class ComputerTechniques<T> : ISolving<T>
     }
 
 
-    /// <summary>
-    /// the function returns a string representing the board state. 
-    /// the purpose is to not go to loops in the backtracking
-    /// </summary>
-    /// <returns></returns>
-    private string GetBoardState()
-    {
-        StringBuilder boardString = new StringBuilder();
-        for (int row = 0; row < sudokuBoard.Size; row++)
-        {
-            for (int col = 0; col < sudokuBoard.Size; col++)
-            {
-                boardString.Append(sudokuBoard.board[row, col].IsPermanent() ? sudokuBoard.board[row, col].GetValue().ToString() : "0");
-            }
-        }
-        return boardString.ToString();
-    }
+
 
     /// <summary>
     /// the function recieves a cell indexes and his possibillities of values , 
@@ -153,8 +132,6 @@ public class ComputerTechniques<T> : ISolving<T>
         return valueConstraints.OrderBy(valueConst => valueConst.constrainingCount).Select(valueConst => valueConst.value).ToList();
     }
 
-
-   
 }
 
 
