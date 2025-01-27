@@ -47,7 +47,6 @@ public class SolverManager<T>
             technique.Solve();
             if (this.sudokuBoard.IsBoardSolved())
             {
-                Console.WriteLine("\n\nSolved!");
                 return true;
                
             }

@@ -16,6 +16,7 @@ public class Game
 {
     public void StartGame()
     {
+        Utilities.SudokuBoardUtilities.EngineTrick();
         while (true)
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -36,9 +37,10 @@ public class Game
                 solver.AddTechnique(humanTec);
                 solver.AddTechnique(ComputerTec);
                 var watch = System.Diagnostics.Stopwatch.StartNew();
-                solver.SolveBoard();
+                bool Solved = solver.SolveBoard();
                 watch.Stop();
                 var time = watch.ElapsedMilliseconds;
+                Console.WriteLine("\n Solved The Board!\n");
                 Console.WriteLine($"Took {time} miliseconds ");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 board.DisplayBoard();
