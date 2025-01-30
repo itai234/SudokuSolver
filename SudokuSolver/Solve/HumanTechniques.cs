@@ -45,9 +45,9 @@ public class HumanTechniques<T> : ISolving<T>
         {
             changed = sudokuBoard.UpdateBoard()
                 || HiddenSingle();
-                //|| ApplyNakedSets()
-              //  || LockedCandidatesBlockWithinRowOrCol()
-            //    || LockedCandidatesRowOrColWithinBox();
+              //  || ApplyNakedSets()
+                //|| LockedCandidatesBlockWithinRowOrCol()
+               // || LockedCandidatesRowOrColWithinBox();
 
 
             didChange = didChange | changed;
@@ -371,7 +371,7 @@ public class HumanTechniques<T> : ISolving<T>
                 foreach (T possibility in cell.GetPossibilities())
                    nakedCandidates.Add(possibility); 
 
-            if (nakedCandidates.Count() <= setSize)
+            if (nakedCandidates.Count() == setSize)
                 foreach (Cell<T> cell in cells)
                     if (!cell.IsPermanent()&& !set.Contains(cell))         
                         foreach (T candidate in nakedCandidates)
