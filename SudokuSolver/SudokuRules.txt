@@ -1,0 +1,27 @@
+﻿
+
+- This Sudoku Solver Is NOT an Ordinary Sudoku Solver.
+- The Sudoku Solver Supports NxN sudoku boards that are valid.
+- For Example: 1x1 , 4x4 , 9x9 , 16x16 and 25x25 . I have Limited it up to 25x25.
+
+- Each row must contain the digits 1 through N without repetition.
+- Each column must contain the digits 1 through N without repetition.
+- Each sqrt(N) x sqrt(N) box must contain the digits 1 through N without repetition.
+- Each Cell in the board has a value from 1 to N.
+
+- Instructions For Input: 
+- In Order to solve Your Sudoku, You must Enter a string, containing numbers from 0 to N.
+- The number 0 , will represent an empty cell, a cell which doesn't have a value for sure (for now). 
+- The numbers 1-N , will represent an Permanent Number, Meaning this Number wont change and it will stay in that cell.
+
+- Ways To Insert Your Input:
+- First way is To Insert Your Input Is In the cli, Here.
+- Second way is To Put Your Input in a text file, choose the option of Input from file, there you will put the path to the text file.
+- Example of a string to input : 507000030000061000108000000620040000000700080000000000010000604300500000000000200.
+- The Size of the Input must be Valid, Meaning, The size of a sudoku board, and valid numbers.
+
+- For bigger boards Than 9x9 , you will have to insert numbers above 9 right? 
+- The Solution to This, Is Using the ASCII table. But I got you.
+- This Is The Range Of ALL possible Values To insert:
+- 0 is empty cell.
+- Range: 123456789:;<=>?@ABCDEFGH

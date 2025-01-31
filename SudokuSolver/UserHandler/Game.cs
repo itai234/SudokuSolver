@@ -1,56 +1,58 @@
-﻿using SudokuSolver.DataStructures.Board;
-using SudokuSolver.Solve;
-using SudokuSolver.UserHandler.Input;
+﻿using SudokuSolver.UserHandler.Input;
+using SudokuSolver.UserHandler.Output;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Threading;
 
 namespace SudokuSolver.UserHandler;
 
 /// <summary>
-/// this class will be the main class of the sudoku.
+/// this is the main class.
+/// it will redirect the user to the menu.
 /// </summary>
 public class Game
 {
+    /// <summary>
+    /// starts the game and gives the player his choices.
+    /// </summary>
     public void StartGame()
     {
+        Console.CancelKeyPress += (sender, cancel) =>
+        {
+            Console.WriteLine(ConsoleOutputUtilities.EXIT_MESSAGE);
+        };
         Utilities.SudokuBoardUtilities.EngineTrick();
 
         while (true)
         {
             try
             {
-                SudokuMenuHandler.MenuUserChoice();
+                SudokuMenuHandler.ShowMenu();
+                string choice = Console.ReadLine();
+                bool exit = SudokuMenuHandler.HandleChoice(choice);
+                if (exit) break;
             }
-            catch(EndOfStreamException ex)
+            catch (EndOfStreamException)
             {
                 Console.WriteLine("Try again.");
             }
-            catch(ThreadInterruptedException ex)
+            catch (ThreadInterruptedException)
             {
                 Console.WriteLine("Try again.");
             }
-            catch(IOException ex)
+            catch (IOException)
             {
                 Console.WriteLine("Try again.");
             }
-
-            catch (ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException)
             {
                 Console.WriteLine("Input too long");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Unexpected Exception Occured");
+                Console.WriteLine(ex.Message);
             }
-
         }
-                
     }
-
 }
 

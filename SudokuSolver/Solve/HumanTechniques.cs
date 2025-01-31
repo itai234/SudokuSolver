@@ -44,10 +44,11 @@ public class HumanTechniques<T> : ISolving<T>
         do
         {
             changed = sudokuBoard.UpdateBoard()
+                //  || LockedCandidatesBlockWithinRowOrCol()
+                // || LockedCandidatesRowOrColWithinBox()
                 || HiddenSingle();
-              //  || ApplyNakedSets()
-                //|| LockedCandidatesBlockWithinRowOrCol()
-               // || LockedCandidatesRowOrColWithinBox();
+               // || ApplyNakedSets();
+                
 
 
             didChange = didChange | changed;
@@ -257,7 +258,8 @@ public class HumanTechniques<T> : ISolving<T>
     {
         bool didChange = false;
         var groupedByRow = candidateCells.GroupBy(cell => cell.row).ToList();
-        if (groupedByRow.Count == 1)
+
+        if (groupedByRow.Count == 1 && groupedByRow[0].Count() == candidateCells.Count)
         {
             int lockedRow = groupedByRow[0].Key;
             for (int col = 0; col < sudokuBoard.Size; col++)
@@ -269,14 +271,13 @@ public class HumanTechniques<T> : ISolving<T>
                     {
                         RemoveCellPossibilityAndUpdate(lockedRow, col, candidate);
                         didChange = true;
-
                     }
                 }
             }
         }
-
         return didChange;
     }
+
 
     /// <summary>
     /// the function checks first if the candidate cells are only in one column and only,
@@ -290,7 +291,7 @@ public class HumanTechniques<T> : ISolving<T>
     {
         bool didChange = false;
         var groupedByCol = candidateCells.GroupBy(cell => cell.col).ToList();
-        if (groupedByCol.Count == 1)
+        if (groupedByCol.Count == 1 && groupedByCol[0].Count() == candidateCells.Count)
         {
             int lockedCol = groupedByCol[0].Key;
             for (int row = 0; row < sudokuBoard.Size; row++)
@@ -308,6 +309,7 @@ public class HumanTechniques<T> : ISolving<T>
         }
         return didChange;
     }
+
 
 
 

@@ -79,39 +79,119 @@ public class Board<T>
     {
         return Enumerable.Range(start, end).Cast<T>();
     }
-    /// <summary>
-    /// the function will print out the board but this display is temporay for now . 
-    /// </summary>
-    public void DisplayBoard()
+
+
+   /// <summary>
+   /// the function will return a string of the board 
+   /// and afterwards when you print it out it will be organized and cool.
+   /// </summary>
+   /// <returns> string representing the board. </returns>
+    public string DisplayBoard()
     {
+        var sb = new StringBuilder();
+        var rowLabels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var colLabels = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int boxSize = (int)Math.Sqrt(Size);
-        string horizontalSeparator = new string('-', Size*3  + boxSize - 1);
 
-        for (int row = 0; row < Size; row++)
+        int cellWidth = (int)Math.Floor(Math.Log10(Size) + 1);
+        if (cellWidth < 1) cellWidth = 1;
+        int lineSegmentWidth = cellWidth + 2;
+
+        sb.Append("   ");
+        for (int c = 0; c < Size; c++)
         {
-            if (row % boxSize == 0 && row != 0)
-                Console.WriteLine(horizontalSeparator);
+            sb.Append(" ");
+            string label = colLabels[c].ToString().PadLeft(cellWidth, ' ');
+            sb.Append(label);
+            sb.Append(" ");
+            if ((c + 1) % boxSize == 0 && c < Size - 1) sb.Append(" ");
+        }
+        sb.AppendLine();
 
-            for (int col = 0; col < Size; col++)
+        sb.Append("   ");
+        sb.AppendLine(BuildLine(true, false, lineSegmentWidth));
+
+        for (int r = 0; r < Size; r++)
+        {
+            sb.Append(" ");
+            sb.Append(rowLabels[r]);
+            sb.Append(" ");
+            for (int c = 0; c < Size; c++)
             {
-                if (col % boxSize == 0 && col != 0)
-                    Console.Write(" | ");
+                if (c % boxSize == 0) sb.Append("║");
+                else sb.Append("│");
 
-                var cell = board[row, col];
-                if (cell.IsPermanent())
+                var val = board[r, c].IsPermanent() ? board[r, c].GetValue().ToString() : "0";
+                val = val.PadLeft(cellWidth, ' ');
+                sb.Append($" {val} ");
+            }
+            sb.Append("║");
+            sb.AppendLine();
+
+            sb.Append("   ");
+            if (r < Size - 1)
+            {
+                if ((r + 1) % boxSize == 0)
                 {
-                    Console.Write($"{cell.GetValue()} ");
+                    sb.AppendLine(BuildLine(false, false, lineSegmentWidth, thick: true));
                 }
                 else
                 {
-                    Console.Write("0 ");
+                    sb.AppendLine(BuildLine(false, false, lineSegmentWidth));
                 }
             }
-            Console.WriteLine();
+            else
+            {
+                sb.AppendLine(BuildLine(false, true, lineSegmentWidth));
+            }
         }
-  
 
+        return sb.ToString();
     }
+
+    /// <summary>
+    /// helper function to build a line in the display of the board.
+    /// gets all the info about how should the line be built.
+    /// </summary>
+    /// <param name="top"></param>
+    /// <param name="bottom"></param>
+    /// <param name="segmentWidth"></param>
+    /// <param name="thick"></param>
+    /// <returns></returns>
+    string BuildLine(bool top, bool bottom, int segmentWidth, bool thick = false)
+    {
+        var sb = new StringBuilder();
+        int boxSize = (int)Math.Sqrt(Size);
+
+        char left = top ? '╔' : (bottom ? '╚' : (thick ? '╠' : '├'));
+        char mid = top ? '╦' : (bottom ? '╩' : (thick ? '╬' : '┼'));
+        char right = top ? '╗' : (bottom ? '╝' : (thick ? '╣' : '┤'));
+        char thin = '─';
+        char bold = '═';
+
+        sb.Append(left);
+        for (int c = 0; c < Size; c++)
+        {
+            char lineChar = thick ? bold : thin;
+            sb.Append(new string(lineChar, segmentWidth));
+            if (c < Size - 1)
+            {
+                if ((c + 1) % boxSize == 0)
+                {
+                    sb.Append(thick ? mid : '┼');
+                }
+                else
+                {
+                    sb.Append(lineChar);
+                }
+            }
+        }
+        sb.Append(right);
+
+        return sb.ToString();
+    }
+
+
 
 
 }
