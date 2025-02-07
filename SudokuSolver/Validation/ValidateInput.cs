@@ -10,6 +10,7 @@ public class ValidateInput<T>
 {
     private readonly string _userInput;
     private readonly int _boardSize;
+    private readonly int MAX_BOARD_SIZE = 25 * 25;
 
     /// <summary>
     /// Main constructor to initialize the input and board size.
@@ -17,10 +18,13 @@ public class ValidateInput<T>
     /// <param name="userInput">The input string representing the Sudoku board.</param>
     public ValidateInput(string userInput)
     {
+        if(userInput.Length > MAX_BOARD_SIZE)
+            throw new Exceptions.InvalidBoardSizeException("Input length is invalid. Cannot Represent a square Sudoku board.");
         _userInput = userInput ?? throw new ArgumentNullException("Input cannot be null.");
         double root = Math.Sqrt(_userInput.Length);
-        if (root != (int)root)
+        if (root != (int)root || Math.Sqrt(root) % 1 != 0 )
             throw new Exceptions.InvalidBoardSizeException("Input length is invalid. Cannot Represent a square Sudoku board.");
+
         _boardSize = (int)root;
     }
 

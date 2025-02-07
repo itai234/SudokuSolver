@@ -24,4 +24,4 @@
 - The Solution to This, Is Using the ASCII table. But I got you.
 - This Is The Range Of ALL possible Values To insert:
 - 0 is empty cell.
-- Range: 123456789:;<=>?@ABCDEFGH
+- Range: 123456789:;<=>?@ABCDEFGHI

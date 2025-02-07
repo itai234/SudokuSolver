@@ -25,9 +25,10 @@ public class ConsoleBoardInput : InputReader
         input = input.Replace('.', '0');
         Console.WriteLine(ConsoleOutputUtilities.WANT_TO_SOLVE_MESSAGE);
         string answer = Console.ReadLine();
+        answer = answer.ToLower();
         switch (answer)
         {
-            case "Yes":
+            case "yes":
                 try
                 {
                     ValidateInput(input);

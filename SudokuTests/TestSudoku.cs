@@ -85,10 +85,10 @@ public class Tests
             {
                 solvedBoardsCount++; 
             }
-            //if (time > maxTimeForGrid)
-            //{
-            //    Assert.Fail($"solving the grid took too long: {time} milliseconds.");
-            //}
+            if (time > maxTimeForGrid)
+            {
+                Assert.Fail($"solving the grid took too long: {time} milliseconds.");
+            }
             Console.WriteLine($"solved grid in {time} milliseconds.");
 
             Assert.That(solved, Is.True, "Board was not solved successfully.");
