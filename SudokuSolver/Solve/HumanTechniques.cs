@@ -86,10 +86,9 @@ public class HumanTechniques<T> : ISolving<T>
                         || HiddenSingle();
             if (this.sudokuBoard.Size == 16)
                 changed = sudokuBoard.UpdateBoard()
-                         || LockedCandidatesBlockWithinRowOrCol()
-                        || LockedCandidatesRowOrColWithinBox()
-                        || HiddenSingle();
-
+                      || LockedCandidatesBlockWithinRowOrCol()
+                      || LockedCandidatesRowOrColWithinBox()
+                      || HiddenSingle();
             if (this.sudokuBoard.Size > 16)
                 changed = sudokuBoard.UpdateBoard()
                     || HiddenSingle();
@@ -284,8 +283,8 @@ public class HumanTechniques<T> : ISolving<T>
                 if (candidateCells.Count < 2)
                     continue;
                 bool rowChange = LockedCandidatesRowWithinBox(boxIndex, candidate, candidateCells);
-                //bool colChange = LockedCandidatesColWithinBox(boxIndex, candidate, candidateCells);
-                didChange |= (rowChange);
+                bool colChange = LockedCandidatesColWithinBox(boxIndex, candidate, candidateCells);
+                didChange |= (rowChange | colChange);
             }
         }
 
@@ -325,36 +324,36 @@ public class HumanTechniques<T> : ISolving<T>
     }
 
 
-    ///// <summary>
-    ///// the function checks first if the candidate cells are only in one column and only,
-    ///// it they are it updates the rest of the column and remove that candidates possibility in them. 
-    ///// </summary>
-    ///// <param name="boxIndex"> a certain box index inside the sudoku board </param>
-    ///// <param name="candidate"> a value to check inside the box </param>
-    ///// <param name="candidateCells"> a list that represents each cell in the box .</param>
-    ///// <returns> return true if changes were made .</returns>
-    //public bool LockedCandidatesColWithinBox(int boxIndex, T candidate, List<(int row, int col)> candidateCells)
-    //{
-    //    bool didChange = false;
-    //    var groupedByCol = candidateCells.GroupBy(cell => cell.col).ToList();
-    //    if (groupedByCol.Count == 1 && groupedByCol[0].Count() == candidateCells.Count)
-    //    {
-    //        int lockedCol = groupedByCol[0].Key;
-    //        for (int row = 0; row < sudokuBoard.Size; row++)
-    //        {
-    //            if (sudokuBoard.GetBoxIndex(row, lockedCol) != boxIndex)
-    //            {
-    //                Cell<T> cell = sudokuBoard.board[row, lockedCol];
-    //                if (!cell.IsPermanent() && cell.GetPossibilities().Contains(candidate))
-    //                {
-    //                    RemoveCellPossibilityAndUpdate(row, lockedCol, candidate);
-    //                    didChange = true;
-    //                }
-    //            }
-    //        }
-    //    }
-    //    return didChange;
-    //}
+    /// <summary>
+    /// the function checks first if the candidate cells are only in one column and only,
+    /// it they are it updates the rest of the column and remove that candidates possibility in them. 
+    /// </summary>
+    /// <param name="boxIndex"> a certain box index inside the sudoku board </param>
+    /// <param name="candidate"> a value to check inside the box </param>
+    /// <param name="candidateCells"> a list that represents each cell in the box .</param>
+    /// <returns> return true if changes were made .</returns>
+    public bool LockedCandidatesColWithinBox(int boxIndex, T candidate, List<(int row, int col)> candidateCells)
+    {
+        bool didChange = false;
+        var groupedByCol = candidateCells.GroupBy(cell => cell.col).ToList();
+        if (groupedByCol.Count == 1 && groupedByCol[0].Count() == candidateCells.Count)
+        {
+            int lockedCol = groupedByCol[0].Key;
+            for (int row = 0; row < sudokuBoard.Size; row++)
+            {
+                if (sudokuBoard.GetBoxIndex(row, lockedCol) != boxIndex)
+                {
+                    Cell<T> cell = sudokuBoard.board[row, lockedCol];
+                    if (!cell.IsPermanent() && cell.GetPossibilities().Contains(candidate))
+                    {
+                        RemoveCellPossibilityAndUpdate(row, lockedCol, candidate);
+                        didChange = true;
+                    }
+                }
+            }
+        }
+        return didChange;
+    }
 
 
 

@@ -35,7 +35,7 @@ public class ValidateInput<T>
     {
 
         if (string.IsNullOrEmpty(_userInput) || this._userInput.Any(c => !CanConvertToType(c.ToString())))
-            throw new Exceptions.InvalidCharsInInputException("Input contains invalid characters for this board.");
+            throw new Exceptions.InvalidCharsInInputException("Input contains invalid characters for this board/empty string.");
     }
     /// <summary>
     /// the function checks if a character is a type of the Class --> T (integer for example) 

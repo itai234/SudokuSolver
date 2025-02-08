@@ -22,7 +22,6 @@ public class ConsoleBoardInput : InputReader
         Console.WriteLine(ConsoleOutputUtilities.ENTER_BOARD_MESSAGE);
         string input = Console.ReadLine();
         input = input.Replace(" ", "");
-        input = input.Replace('.', '0');
         Console.WriteLine(ConsoleOutputUtilities.WANT_TO_SOLVE_MESSAGE);
         string answer = Console.ReadLine();
         answer = answer.ToLower();

@@ -45,7 +45,7 @@ public class Board<T>
         IEnumerable<T> range = GetRangeForInt(Convert.ToInt32(MIN_VALUE), Size);
         for (int row = 0; row < Size; row++)
             for (int col = 0; col < Size; col++)
-                SetIntValueForCell(input, row, col,range);
+                SetIntValueForCell(input, row, col, range);
 
     }
 
@@ -59,15 +59,15 @@ public class Board<T>
     /// <param name="row">represents the row that the cell is in it</param>
     /// <param name="col"> represents the column that the cell is in it </param>
     /// <param name="range"> the range of the numbers flexible to the board's size.</param>
-    private void SetIntValueForCell(string input, int row, int col,IEnumerable<T> range )
+    private void SetIntValueForCell(string input, int row, int col, IEnumerable<T> range)
     {
         char currentChar = input[row * Size + col];
         int number = currentChar - '0';
-        if (number == 0)      
-            board[row, col] = new Cell<T>(range,row,col);
+        if (number == 0)
+            board[row, col] = new Cell<T>(range, row, col);
         else
-            board[row, col] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)),row,col);
-        
+            board[row, col] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)), row, col);
+
     }
     /// <summary>
     /// gets the range for the int board.
@@ -81,11 +81,11 @@ public class Board<T>
     }
 
 
-   /// <summary>
-   /// the function will return a string of the board 
-   /// and afterwards when you print it out it will be organized and cool.
-   /// </summary>
-   /// <returns> string representing the board. </returns>
+    /// <summary>
+    /// the function will return a string of the board 
+    /// and afterwards when you print it out it will be organized and cool.
+    /// </summary>
+    /// <returns> string representing the board. </returns>
     public string DisplayBoard()
     {
         var sb = new StringBuilder();
@@ -191,6 +191,18 @@ public class Board<T>
         return sb.ToString();
     }
 
+    public string BoardToString()
+    {
+        string result = "";
+        for (int row = 0; row < Size; row++)
+        {
+            for(int col = 0; col < Size; col++)
+            {
+                result += board[row, col].IsPermanent() ? board[row, col].GetValue() : 0;
+            }
+        }
+        return result;  
+    }
 
 
 

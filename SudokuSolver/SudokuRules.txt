@@ -25,3 +25,5 @@
 - This Is The Range Of ALL possible Values To insert:
 - 0 is empty cell.
 - Range: 123456789:;<=>?@ABCDEFGHI
+
+* For 25x25 Boards , Put Full Screen. 

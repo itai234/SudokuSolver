@@ -100,9 +100,9 @@ public class ComputerTechniques<T> : ISolving<T>
 
     /// <summary>
     /// the function recieves a cell indexes and his possibillities of values , 
-    /// the function creates a list of the value constaints , and checks for each possibility
+    /// the function creates a list of the value constraints , and checks for each possibility
     /// how many cells on his row/col/box contain it , and adds it to the list.
-    /// the list is after this sorted by the constainting count effect of each value,
+    /// the list is after this sorted by the constrainting count effect of each value,
     /// and then you convert it to a list of only the values themselves.
     /// </summary>
     /// <param name="row"> the row of the cell </param>
@@ -112,21 +112,16 @@ public class ComputerTechniques<T> : ISolving<T>
     private List<T> GetValuesOrderedByPriority(int row, int col, HashSet<T> cellPossibilities)
     {
         List<(T value, int constrainingCount)> valueConstraints = new List<(T, int)>();
+        List<(int row, int col)> Cells = sudokuBoard.GetCellsBesidesItself(row, col);
 
         foreach (T value in cellPossibilities)
         {
-            if (sudokuBoard.CanPlaceValue(row, col, value))
-            {
-                int constrainingCount = 0;
-                List<(int row, int col)> Cells = sudokuBoard.GetCellsBesidesItself(row, col);
-
-                foreach ((int row , int col) cell in Cells)
-                    if (!sudokuBoard.board[row, col].IsPermanent() &&
-                        sudokuBoard.board[row, col].GetPossibilities().Contains(value))
-                        constrainingCount++;
-
-                valueConstraints.Add((value, constrainingCount));
-            }
+            int constrainingCount = 0;
+            foreach ((int row, int col) cell in Cells)
+                if (!sudokuBoard.board[row, col].IsPermanent() &&
+                    sudokuBoard.board[row, col].GetPossibilities().Contains(value))
+                    constrainingCount++;
+            valueConstraints.Add((value, constrainingCount));
         }
 
         return valueConstraints.OrderBy(valueConst => valueConst.constrainingCount).Select(valueConst => valueConst.value).ToList();
