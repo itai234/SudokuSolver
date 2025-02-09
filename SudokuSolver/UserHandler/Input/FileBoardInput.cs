@@ -1,4 +1,5 @@
-﻿using SudokuSolver.Exceptions;
+﻿using Microsoft.Testing.Platform.Extensions.Messages;
+using SudokuSolver.Exceptions;
 using SudokuSolver.UserHandler.Output;
 using System;
 
@@ -39,18 +40,20 @@ public class FileBoardInput : InputReader
             return;
         }
 
-        UsersInput = UsersInput.Replace(" ", "");
-        UsersInput = UsersInput.Replace('.', '0');
-
+        
         try
         {
-            ValidateInput(UsersInput);
-            AddTechniques();
-            Solve();
-            if (board.IsBoardSolved())
-                FileWriter.WriteToFile(path, board.DisplayBoard());
-            else
-                FileWriter.WriteToFile(path, "The board is Unsolvable");
+            for (int index = 0; index < UsersInput.Length; index++)
+            {
+                ValidateInput(UsersInput[index]);
+                AddTechniques();
+                Solve();
+                if (board.IsBoardSolved())
+                    FileWriter.WriteToFile(path, board.BoardToString());
+                else
+                    FileWriter.WriteToFile(path, "The board is Unsolvable");
+            }
+            
         }
         catch
         {
@@ -62,14 +65,15 @@ public class FileBoardInput : InputReader
     /// </summary>
     /// <returns></returns>
     /// <exception cref="InvalidFilePathException"> custom exception if the file is invalid. </exception>
-    string ReadFile()
+    string[] ReadFile()
     {
         if (!path.EndsWith(".txt"))
             throw new InvalidFilePathException("The file path is invalid.");
 
         try
         {
-            return File.ReadAllText(path);
+            return File.ReadAllLines(path);
+                 
         }
         catch (FileNotFoundException)
         {

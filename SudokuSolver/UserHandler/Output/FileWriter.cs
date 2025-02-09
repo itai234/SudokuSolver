@@ -20,9 +20,9 @@ public static class FileWriter
         {
             string directoryPath = Path.GetDirectoryName(path);
             string filePath = Path.Combine(directoryPath, "Result.txt");
-            using (var sw = new StreamWriter(filePath))
+            using (var sw = new StreamWriter(filePath ,append: true))
             {
-                sw.Write(board);
+                sw.WriteLine("\n" + board + "\n");
             }
         }
         catch (UnauthorizedAccessException)

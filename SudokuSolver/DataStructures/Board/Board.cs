@@ -101,7 +101,7 @@ public class Board<T>
         for (int c = 0; c < Size; c++)
         {
             sb.Append(" ");
-            string label = colLabels[c].ToString().PadLeft(cellWidth, ' ');
+            string label = colLabels[c].ToString().PadLeft(cellWidth+1 );
             sb.Append(label);
             sb.Append(" ");
             if ((c + 1) % boxSize == 0 && c < Size - 1) sb.Append(" ");

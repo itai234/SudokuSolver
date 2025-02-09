@@ -39,6 +39,8 @@ public class HumanTechniques<T> : ISolving<T>
     /// </summary>
     public bool Solve()
     {
+        if(sudokuBoard.IsBoardSolved())
+            return true;    
         if (IsFirstRound)
         {
             IsFirstRound = false;

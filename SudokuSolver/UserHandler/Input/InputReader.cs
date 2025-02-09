@@ -17,7 +17,7 @@ public abstract class InputReader
     protected SudokuBoard<int> board;
     protected SolverManager<int> solver;
     protected Stopwatch stopwatch = new Stopwatch();
-    protected string UsersInput;
+    protected string[] UsersInput;
 
     /// <summary>
     /// this function represents reading the input from the user, and it can be either by the path 
