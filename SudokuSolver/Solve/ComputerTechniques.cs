@@ -64,11 +64,12 @@ public class ComputerTechniques<T> : ISolving<T>
         int col = cell.Value.col;
         HashSet<T> cellPossibilities = sudokuBoard.board[row, col].GetPossibilities();
 
-        List<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
+        Stack<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
 
 
-        foreach (T value in orderedValues)
+        while (orderedValues.Count > 0) 
         {
+            T value = orderedValues.Pop();  
             if (sudokuBoard.CanPlaceValue(row, col, value))
             {
                 var savedState = sudokuBoard.SaveBoardState();
@@ -103,28 +104,32 @@ public class ComputerTechniques<T> : ISolving<T>
     /// the function creates a list of the value constraints , and checks for each possibility
     /// how many cells on his row/col/box contain it , and adds it to the list.
     /// the list is after this sorted by the constrainting count effect of each value,
-    /// and then you convert it to a list of only the values themselves.
+    /// after all of this you returns a stack ordered by the constrainting count.
     /// </summary>
     /// <param name="row"> the row of the cell </param>
     /// <param name="col"> the column of the cell </param>
     /// <param name="cellPossibilities"> the hashset of the possibilities of the cell</param>
     /// <returns></returns>
-    private List<T> GetValuesOrderedByPriority(int row, int col, HashSet<T> cellPossibilities)
+    private Stack<T> GetValuesOrderedByPriority(int row, int col, HashSet<T> cellPossibilities)
     {
         List<(T value, int constrainingCount)> valueConstraints = new List<(T, int)>();
-        List<(int row, int col)> Cells = sudokuBoard.GetCellsBesidesItself(row, col);
+        List<(int row, int col)> cells = sudokuBoard.GetCellsBesidesItself(row, col);
 
         foreach (T value in cellPossibilities)
         {
             int constrainingCount = 0;
-            foreach ((int row, int col) cell in Cells)
-                if (!sudokuBoard.board[row, col].IsPermanent() &&
-                    sudokuBoard.board[row, col].GetPossibilities().Contains(value))
+            foreach ((int r, int c) in cells)
+                if (!sudokuBoard.board[r, c].IsPermanent() &&
+                    sudokuBoard.board[r, c].GetPossibilities().Contains(value))
                     constrainingCount++;
+             
             valueConstraints.Add((value, constrainingCount));
         }
 
-        return valueConstraints.OrderBy(valueConst => valueConst.constrainingCount).Select(valueConst => valueConst.value).ToList();
+        IEnumerable<T> orderedValues =
+            valueConstraints.OrderBy(x => x.constrainingCount).Select(x => x.value);
+        Stack<T> resultStack = new Stack<T>(orderedValues);
+        return resultStack;
     }
 
 }
