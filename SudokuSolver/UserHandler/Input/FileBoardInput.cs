@@ -30,7 +30,7 @@ public class FileBoardInput : InputReader
         path = Console.ReadLine();
         try
         {
-            UsersInput = ReadFile();
+            _usersInput = ReadFile();
         }
         catch (Exception ex)
         {
@@ -43,13 +43,13 @@ public class FileBoardInput : InputReader
         
         try
         {
-            for (int index = 0; index < UsersInput.Length; index++)
+            for (int index = 0; index < _usersInput.Length; index++)
             {
-                ValidateInput(UsersInput[index]);
+                ValidateInput(_usersInput[index]);
                 AddTechniques();
                 Solve();
-                if (board.IsBoardSolved())
-                    FileWriter.WriteToFile(path, board.BoardToString());
+                if (_board.IsBoardSolved())
+                    FileWriter.WriteToFile(path, _board.BoardToString());
                 else
                     FileWriter.WriteToFile(path, "The board is Unsolvable");
             }

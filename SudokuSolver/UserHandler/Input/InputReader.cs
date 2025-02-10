@@ -14,10 +14,10 @@ namespace SudokuSolver.UserHandler.Input;
 /// </summary>
 public abstract class InputReader
 {
-    protected SudokuBoard<int> board;
-    protected SolverManager<int> solver;
+    protected SudokuBoard<int> _board;
+    protected SolverManager<int> _solver;
     protected Stopwatch stopwatch = new Stopwatch();
-    protected string[] UsersInput;
+    protected string[] _usersInput;
 
     /// <summary>
     /// this function represents reading the input from the user, and it can be either by the path 
@@ -37,7 +37,7 @@ public abstract class InputReader
         {
             var validator = new Validation.ValidateInput<int>(input);
             validator.Validate();
-            board = new SudokuBoard<int>(input);
+            _board = new SudokuBoard<int>(input);
         }
         catch (Exception ex)
         when (ex is InvalidBoardSizeException
@@ -57,11 +57,11 @@ public abstract class InputReader
     /// </summary>
     public void AddTechniques()
     {
-        solver = new SolverManager<int>(board);
+        _solver = new SolverManager<int>(_board);
         var humanTec = new HumanTechniques<int>();
         var computerTec = new ComputerTechniques<int>();
-        solver.AddTechnique(humanTec);
-        solver.AddTechnique(computerTec);
+        _solver.AddTechnique(humanTec);
+        _solver.AddTechnique(computerTec);
     }
 
     /// <summary>
@@ -73,14 +73,14 @@ public abstract class InputReader
         {
             stopwatch.Reset();
             stopwatch.Start();
-            bool solved = solver.SolveBoard();
+            bool solved = _solver.SolveBoard();
             stopwatch.Stop();
             var time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine();
             Console.WriteLine("Solved The Board!");
             Console.WriteLine($"Took {time} miliseconds");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(board.DisplayBoard());
+            Console.WriteLine(_board.DisplayBoard());
             Console.ResetColor();
             Console.WriteLine();
         }

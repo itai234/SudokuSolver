@@ -17,8 +17,8 @@ namespace SudokuSolver.Solve;
 /// <typeparam name="T"></typeparam>
 public class ComputerTechniques<T> : ISolving<T>
 {
-    private SudokuBoard<T> sudokuBoard;
-    HumanTechniques<T> humanTechniques;
+    private SudokuBoard<T> _sudokuBoard;
+    private HumanTechniques<T> _humanTechniques;
 
 
     /// <summary>
@@ -28,9 +28,9 @@ public class ComputerTechniques<T> : ISolving<T>
     /// <param name="sudokuBoard"></param>
     public void SetBoard(SudokuBoard<T> sudokuBoard)
     {
-        this.sudokuBoard = sudokuBoard;
-        humanTechniques = new HumanTechniques<T>();
-        humanTechniques.SetBoard(sudokuBoard);
+        this._sudokuBoard = sudokuBoard;
+        _humanTechniques = new HumanTechniques<T>();
+        _humanTechniques.SetBoard(sudokuBoard);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class ComputerTechniques<T> : ISolving<T>
         bool didSolve = false;
         didSolve = BackTracking();
         Validation.ValidateBoard<T>.Validate(
-        sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
+        _sudokuBoard.BoardGrid, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
         if (didSolve == false) throw new UnsolvableBoardException("Board is Unsolvable.");
         return didSolve;
 
@@ -53,16 +53,16 @@ public class ComputerTechniques<T> : ISolving<T>
     /// <returns></returns>
     private bool BackTracking()
     {
-        if (sudokuBoard.IsBoardSolved())
+        if (_sudokuBoard.IsBoardSolved())
             return true;
 
-        var cell = sudokuBoard.FindCellWithLeastPossibilities();
+        var cell = _sudokuBoard.FindCellWithLeastPossibilities();
         if (cell == null)
             return false;
 
         int row = cell.Value.row;
         int col = cell.Value.col;
-        HashSet<T> cellPossibilities = sudokuBoard.board[row, col].GetPossibilities();
+        HashSet<T> cellPossibilities = _sudokuBoard.BoardGrid[row, col].GetPossibilities();
 
         Stack<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
 
@@ -70,18 +70,18 @@ public class ComputerTechniques<T> : ISolving<T>
         while (orderedValues.Count > 0) 
         {
             T value = orderedValues.Pop();  
-            if (sudokuBoard.CanPlaceValue(row, col, value))
+            if (_sudokuBoard.CanPlaceValue(row, col, value))
             {
-                var savedState = sudokuBoard.SaveBoardState();
-                var savedRows = sudokuBoard.SaveRowsState();
-                var savedCols = sudokuBoard.SaveColsState();
-                var savedBoxes = sudokuBoard.SaveBoxesState();
-                sudokuBoard.SetCellValue(row, col, value);
+                var savedState = _sudokuBoard.SaveBoardState();
+                var savedRows = _sudokuBoard.SaveRowsState();
+                var savedCols = _sudokuBoard.SaveColsState();
+                var savedBoxes = _sudokuBoard.SaveBoxesState();
+                _sudokuBoard.SetCellValue(row, col, value);
 
                 try
                 {
-                    humanTechniques.Solve();
-                    if (sudokuBoard.IsBoardSolved())
+                    _humanTechniques.Solve();
+                    if (_sudokuBoard.IsBoardSolved())
                         return true;
                     if (BackTracking())
                         return true;
@@ -89,8 +89,8 @@ public class ComputerTechniques<T> : ISolving<T>
                 catch (Exception ex)
                 {
                 }
-                sudokuBoard.RestoreBoardState(savedState);
-                sudokuBoard.RestorePropertiesState(savedRows, savedCols, savedBoxes);
+                _sudokuBoard.RestoreBoardState(savedState);
+                _sudokuBoard.RestorePropertiesState(savedRows, savedCols, savedBoxes);
             }
         }
         return false;
@@ -113,14 +113,14 @@ public class ComputerTechniques<T> : ISolving<T>
     private Stack<T> GetValuesOrderedByPriority(int row, int col, HashSet<T> cellPossibilities)
     {
         List<(T value, int constrainingCount)> valueConstraints = new List<(T, int)>();
-        List<(int row, int col)> cells = sudokuBoard.GetCellsBesidesItself(row, col);
+        List<(int row, int col)> cells = _sudokuBoard.GetCellsBesidesItself(row, col);
 
         foreach (T value in cellPossibilities)
         {
             int constrainingCount = 0;
             foreach ((int r, int c) in cells)
-                if (!sudokuBoard.board[r, c].IsPermanent() &&
-                    sudokuBoard.board[r, c].GetPossibilities().Contains(value))
+                if (!_sudokuBoard.BoardGrid[r, c].IsPermanent() &&
+                    _sudokuBoard.BoardGrid[r, c].GetPossibilities().Contains(value))
                     constrainingCount++;
              
             valueConstraints.Add((value, constrainingCount));

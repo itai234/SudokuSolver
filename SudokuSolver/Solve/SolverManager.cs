@@ -14,8 +14,8 @@ namespace SudokuSolver.Solve;
 public class SolverManager<T>
 {
 
-    private SudokuBoard<T> sudokuBoard;
-    private List<ISolving<T>> solvingTechniques;
+    private SudokuBoard<T> _sudokuBoard;
+    private List<ISolving<T>> _solvingTechniques;
     /// <summary>
     /// the constructor gets the sudoku board class instance and inserts it to  the class property,
     /// it also creates a list of the solving techniques using the interface.
@@ -23,8 +23,8 @@ public class SolverManager<T>
     /// <param name="sudokuBoard"></param>
     public SolverManager(SudokuBoard<T> sudokuBoard)
     {
-        this.sudokuBoard = sudokuBoard;
-        solvingTechniques = new List<ISolving<T>>();
+        this._sudokuBoard = sudokuBoard;
+        _solvingTechniques = new List<ISolving<T>>();
     }
     /// <summary>
     /// adds a technique to the list of the techniques in this class.
@@ -33,8 +33,8 @@ public class SolverManager<T>
     /// <param name="technique"></param>
     public void AddTechnique(ISolving<T> technique)
     {
-        technique.SetBoard(sudokuBoard);
-        solvingTechniques.Add(technique);
+        technique.SetBoard(_sudokuBoard);
+        _solvingTechniques.Add(technique);
     }
     /// <summary>
     /// main function to call for all the solving techniques and solve the board
@@ -42,10 +42,10 @@ public class SolverManager<T>
     /// </summary>
     public bool SolveBoard()
     {
-        foreach (var technique in solvingTechniques)
+        foreach (var technique in _solvingTechniques)
         {
             technique.Solve();
-            if (this.sudokuBoard.IsBoardSolved())
+            if (this._sudokuBoard.IsBoardSolved())
             {
                 return true;
                

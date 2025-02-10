@@ -16,14 +16,13 @@ namespace SudokuTests;
 [TestFixture]
 public class SpecialCases
 {
-    private HumanTechniques<int> _HumanTechniques;
-    private ComputerTechniques<int> _ComputerTechniques;
-    private SudokuBoard<int> _SudokuBoard;
-    private List<string> SudokusBoards;
-    private SudokuSolver.Validation.ValidateInput<int> validator;
-    private static int maxTimeForGrid = 1000;
-    private SolverManager<int> solver;
-    private Stopwatch stopwatch = new Stopwatch();
+    private HumanTechniques<int> _humanTechniques;
+    private ComputerTechniques<int> _computerTechniques;
+    private SudokuBoard<int> _sudokuBoard;
+    private SudokuSolver.Validation.ValidateInput<int> _validator;
+    private static readonly int _maxTimeForGrid = 1000;
+    private SolverManager<int> _solver;
+    private Stopwatch _stopwatch = new Stopwatch();
 
     [SetUp]
     public void Setup()
@@ -38,22 +37,22 @@ public class SpecialCases
 
         try
         {
-            validator = new SudokuSolver.Validation.ValidateInput<int>(input);
-            validator.Validate();
-            _SudokuBoard = new SudokuBoard<int>(input);
-            _HumanTechniques = new HumanTechniques<int>();
-            _ComputerTechniques = new ComputerTechniques<int>();
-            solver = new SolverManager<int>(_SudokuBoard);
-            solver.AddTechnique(_HumanTechniques);
-            solver.AddTechnique(_ComputerTechniques);
-            stopwatch.Reset();
-            stopwatch.Start();
-            solver.SolveBoard();
+            _validator = new SudokuSolver.Validation.ValidateInput<int>(input);
+            _validator.Validate();
+            _sudokuBoard = new SudokuBoard<int>(input);
+            _humanTechniques = new HumanTechniques<int>();
+            _computerTechniques = new ComputerTechniques<int>();
+            _solver = new SolverManager<int>(_sudokuBoard);
+            _solver.AddTechnique(_humanTechniques);
+            _solver.AddTechnique(_computerTechniques);
+            _stopwatch.Reset();
+            _stopwatch.Start();
+            _solver.SolveBoard();
         }
         catch (Exception ex)
         {
-            stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > maxTimeForGrid && _SudokuBoard.Size <= 16)
+            _stopwatch.Stop();
+            if (_stopwatch.ElapsedMilliseconds > _maxTimeForGrid && _sudokuBoard.Size <= 16)
                 Assert.Fail("Took Too Long");
             Assert.That(ex.Message, Is.EqualTo(expectedResult));
         }

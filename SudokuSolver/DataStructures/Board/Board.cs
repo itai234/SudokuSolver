@@ -17,7 +17,7 @@ namespace SudokuSolver.DataStructures.Board;
 /// <typeparam name="T"></typeparam>
 public class Board<T>
 {
-    public Cell<T>[,] board { get; protected set; }
+    public Cell<T>[,] BoardGrid { get; protected set; }
     public int Size { get; }
 
     protected readonly T MIN_VALUE;
@@ -30,7 +30,7 @@ public class Board<T>
     public Board(string input)
     {
         Size = (int)Math.Sqrt(input.Length);
-        board = new Cell<T>[Size, Size];
+        BoardGrid = new Cell<T>[Size, Size];
         MIN_VALUE = (T)Convert.ChangeType(1, typeof(T));
         MAX_VALUE = (T)Convert.ChangeType(Size, typeof(T));
         initializeBoardForIntegers(input);
@@ -64,9 +64,9 @@ public class Board<T>
         char currentChar = input[row * Size + col];
         int number = currentChar - '0';
         if (number == 0)
-            board[row, col] = new Cell<T>(range, row, col);
+            BoardGrid[row, col] = new Cell<T>(range, row, col);
         else
-            board[row, col] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)), row, col);
+            BoardGrid[row, col] = new Cell<T>((T)Convert.ChangeType(number, typeof(T)), row, col);
 
     }
     /// <summary>
@@ -121,7 +121,7 @@ public class Board<T>
                 if (c % boxSize == 0) sb.Append("║");
                 else sb.Append("│");
 
-                var val = board[r, c].IsPermanent() ? board[r, c].GetValue().ToString() : "0";
+                var val = BoardGrid[r, c].IsPermanent() ? BoardGrid[r, c].GetValue().ToString() : "0";
                 val = val.PadLeft(cellWidth, ' ');
                 sb.Append($" {val} ");
             }
@@ -191,6 +191,10 @@ public class Board<T>
         return sb.ToString();
     }
 
+    /// <summary>
+    /// to string of the board info.
+    /// </summary>
+    /// <returns></returns>
     public string BoardToString()
     {
         string result = "";
@@ -198,7 +202,7 @@ public class Board<T>
         {
             for(int col = 0; col < Size; col++)
             {
-                result += board[row, col].IsPermanent() ? board[row, col].GetValue() : 0;
+                result += BoardGrid[row, col].IsPermanent() ? BoardGrid[row, col].GetValue() : 0;
             }
         }
         return result;  

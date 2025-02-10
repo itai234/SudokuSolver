@@ -18,8 +18,8 @@ public class Cell<T>
 {
     private HashSet<T> _possibilities;
     private bool _isPermanent;
-    private int row;
-    private int col;    
+    private int _row;
+    private int _col;    
 
     /// <summary>
     /// this is one of the constructors , it will get all the possibilities in range and 
@@ -32,8 +32,8 @@ public class Cell<T>
     {
         _possibilities = possibilities.ToHashSet<T>();
         _isPermanent = false;
-        this.row = row;
-        this.col = col; 
+        this._row = row;
+        this._col = col; 
     }
     /// <summary>
     ///  this is the second constructor , it will get one value
@@ -47,8 +47,8 @@ public class Cell<T>
         _possibilities = new HashSet<T>();
         _ = _possibilities.Add(value);
         _isPermanent = true;
-        this.row = row;
-        this.col = col;
+        this._row = row;
+        this._col = col;
     }
 
     /// <summary>
@@ -90,11 +90,17 @@ public class Cell<T>
     }
 
 
+    /// <summary>
+    /// sets the boards possibilities again if the cell is to be updated from the start.
+    /// </summary>
+    /// <param name="possibilities"></param>
     public void SetPossibilities(IEnumerable<T> possibilities)
     {
         _possibilities.Clear();
         _possibilities = possibilities.ToHashSet();
         _isPermanent = false;
+        if(_possibilities.Count == 1) 
+            _isPermanent = true;
     }
 
     /// <summary>
@@ -110,7 +116,7 @@ public class Cell<T>
     /// if the cell is permanent the function will returns it's value.
     /// else it will return 0 for ints.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> the value </returns>
     public T? GetValue()
     {
         if (_isPermanent)
@@ -120,11 +126,11 @@ public class Cell<T>
 
     public int GetRow()
     {
-        return this.row;
+        return this._row;
     }
     public int GetCol()
     {
-        return this.col;
+        return this._col;
     }
 
 

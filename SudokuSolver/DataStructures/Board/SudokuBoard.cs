@@ -18,9 +18,9 @@ namespace SudokuSolver.DataStructures.Board;
 /// <typeparam name="T"></typeparam>
 public class SudokuBoard<T> : Board<T>
 {
-    public HashSet<T>[] rows { get; }
-    public HashSet<T>[] cols { get; }
-    public HashSet<T>[] boxes { get; }
+    public HashSet<T>[] Rows { get; }
+    public HashSet<T>[] Cols { get; }
+    public HashSet<T>[] Boxes { get; }
 
     private readonly int boxSize;
 
@@ -32,17 +32,17 @@ public class SudokuBoard<T> : Board<T>
     /// <param name="input"></param>
     public SudokuBoard(string input) : base(input)
     {
-        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardInput);
-        rows = new HashSet<T>[Size];
-        cols = new HashSet<T>[Size];
-        boxes = new HashSet<T>[Size];
+        ValidateBoard<T>.Validate(BoardGrid, SudokuBoardUtilities.GameStateForValidation.BaseBoardInput);
+        Rows = new HashSet<T>[Size];
+        Cols = new HashSet<T>[Size];
+        Boxes = new HashSet<T>[Size];
         boxSize = (int)Math.Sqrt(Size);
 
         for (int index = 0; index < Size; index++)
         {
-            rows[index] = CreatePossibilitySet();
-            cols[index] = CreatePossibilitySet();
-            boxes[index] = CreatePossibilitySet();
+            Rows[index] = CreatePossibilitySet();
+            Cols[index] = CreatePossibilitySet();
+            Boxes[index] = CreatePossibilitySet();
         }
 
         UpdateBoard();
@@ -67,10 +67,10 @@ public class SudokuBoard<T> : Board<T>
         bool didchange = false;
         for (int row = 0; row < Size; row++)
             for (int col = 0; col < Size; col++)
-                if (board[row, col].IsPermanent())
-                    didchange = didchange | RemoveValueFromPossibilities(row, col, board[row, col].GetValue());
+                if (BoardGrid[row, col].IsPermanent())
+                    didchange = didchange | RemoveValueFromPossibilities(row, col, BoardGrid[row, col].GetValue());
 
-        ValidateBoard<T>.Validate(board, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
+        ValidateBoard<T>.Validate(BoardGrid, SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
         return didchange;
     }
  
@@ -86,11 +86,11 @@ public class SudokuBoard<T> : Board<T>
     public bool RemoveValueFromPossibilities(int row, int col, T value)
     {
         bool didchange = false;
-        if (rows[row].Remove(value)) didchange = true;
-        if (cols[col].Remove(value)) didchange = true;
+        if (Rows[row].Remove(value)) didchange = true;
+        if (Cols[col].Remove(value)) didchange = true;
 
         int boxIndex = GetBoxIndex(row, col);
-        if (boxes[boxIndex].Remove(value)) didchange = true;
+        if (Boxes[boxIndex].Remove(value)) didchange = true;
 
         if (UpdateRowPossibilities(row, value)) didchange = true;
         if (UpdateColPossibilities( col, value)) didchange = true;
@@ -119,8 +119,8 @@ public class SudokuBoard<T> : Board<T>
         bool changed = false;
         for (int col = 0; col < Size; col++)
         {
-            if (!board[row, col].IsPermanent())
-                if(board[row, col].RemovePossibility(value)) 
+            if (!BoardGrid[row, col].IsPermanent())
+                if(BoardGrid[row, col].RemovePossibility(value)) 
                     changed = true;
         }
         return changed;
@@ -136,8 +136,8 @@ public class SudokuBoard<T> : Board<T>
         bool changed = false;
         for (int row = 0; row < Size; row++)
         {
-            if (!board[row, col].IsPermanent())
-               if( board[row, col].RemovePossibility(value)) changed = true;
+            if (!BoardGrid[row, col].IsPermanent())
+               if( BoardGrid[row, col].RemovePossibility(value)) changed = true;
         }
         return changed;
     }
@@ -157,8 +157,8 @@ public class SudokuBoard<T> : Board<T>
 
         for (int Row = startRow; Row < startRow + boxSize; Row++)
             for (int Col = startCol; Col < startCol + boxSize; Col++)
-                if (!board[Row, Col].IsPermanent())
-                    if (board[Row, Col].RemovePossibility(value)) changed = true ;
+                if (!BoardGrid[Row, Col].IsPermanent())
+                    if (BoardGrid[Row, Col].RemovePossibility(value)) changed = true ;
         return changed;
     }
     /// <summary>
@@ -170,8 +170,8 @@ public class SudokuBoard<T> : Board<T>
     /// <returns></returns>
     public bool CanPlaceValue(int row, int col, T value)
     {
-        return rows[row].Contains(value) && cols[col].Contains(value) &&
-               boxes[GetBoxIndex(row, col)].Contains(value) && !board[row, col].IsPermanent();
+        return Rows[row].Contains(value) && Cols[col].Contains(value) &&
+               Boxes[GetBoxIndex(row, col)].Contains(value) && !BoardGrid[row, col].IsPermanent();
     }
     /// <summary>
     /// sets a cell value and updates the possibilites in his row, col, and box
@@ -181,7 +181,7 @@ public class SudokuBoard<T> : Board<T>
     /// <param name="value"> the value to set.</param>
     public void SetCellValue(int row, int col, T value)
     {
-        board[row, col].SetValue(value);
+        BoardGrid[row, col].SetValue(value);
         RemoveValueFromPossibilities(row, col, value);
     }
     /// <summary>
@@ -237,9 +237,9 @@ public class SudokuBoard<T> : Board<T>
         {
             for (int col = 0; col < Size; col++)
             {
-                if (!board[row, col].IsPermanent())
+                if (!BoardGrid[row, col].IsPermanent())
                 {
-                    int possibilitiesCount = board[row, col].GetPossibilities().Count();
+                    int possibilitiesCount = BoardGrid[row, col].GetPossibilities().Count();
 
                     if (possibilitiesCount < min)
                     {
@@ -265,9 +265,9 @@ public class SudokuBoard<T> : Board<T>
     private int GetDegreeOfCell(int row, int col)
     {
         int degree = 0;
-        degree += Size - rows[row].Count();
-        degree += Size - cols[col].Count();
-        degree += Size - boxes[GetBoxIndex(row,col)].Count();
+        degree += Size - Rows[row].Count();
+        degree += Size - Cols[col].Count();
+        degree += Size - Boxes[GetBoxIndex(row,col)].Count();
         return degree;
     }
 
@@ -279,7 +279,7 @@ public class SudokuBoard<T> : Board<T>
     {
         for (int row = 0; row < Size; row++)
             for (int col = 0 ; col < Size; col++)
-                if (!board[row,col].IsPermanent()) return false;
+                if (!BoardGrid[row,col].IsPermanent()) return false;
         return true;    
     }
 
@@ -290,7 +290,7 @@ public class SudokuBoard<T> : Board<T>
     /// <returns></returns>
     public HashSet<T> GetRowPossibilities(int row)
     {
-        return rows[row];
+        return Rows[row];
     }
     /// <summary>
     /// returns a col possibilities
@@ -299,7 +299,7 @@ public class SudokuBoard<T> : Board<T>
     /// <returns></returns>
     public HashSet<T> GetColPossibilities(int col)
     {
-        return cols[col];
+        return Cols[col];
     }
     /// <summary>
     /// return a box possibilities
@@ -308,7 +308,7 @@ public class SudokuBoard<T> : Board<T>
     /// <returns></returns>
     public HashSet<T> GetBoxPossibilities(int boxIndex)
     {
-        return boxes[boxIndex];
+        return Boxes[boxIndex];
     }
     /// <summary>
     ///  return the box size in a board.
@@ -351,23 +351,23 @@ public class SudokuBoard<T> : Board<T>
         {
             for(int col = 0; col < Size; col++)
             {
-                stateForBoard[row, col] = new Cell<T>(this.board[row, col].GetPossibilities(),row,col);
+                stateForBoard[row, col] = new Cell<T>(this.BoardGrid[row, col].GetPossibilities(),row,col);
             }
         }
         return stateForBoard;
     }
     public HashSet<T>[] SaveRowsState()
     {
-        return rows.Select(set => new HashSet<T>(set)).ToArray();
+        return Rows.Select(set => new HashSet<T>(set)).ToArray();
     }
     public HashSet<T>[] SaveColsState()
     {
-        return cols.Select(set => new HashSet<T>(set)).ToArray();
+        return Cols.Select(set => new HashSet<T>(set)).ToArray();
     }
 
     public HashSet<T>[] SaveBoxesState()
     {
-        return boxes.Select(set => new HashSet<T>(set)).ToArray();
+        return Boxes.Select(set => new HashSet<T>(set)).ToArray();
     }
     /// <summary>
     /// the function restores the board state , with the state cells matrix  that it has as input ,
@@ -380,7 +380,7 @@ public class SudokuBoard<T> : Board<T>
         {
             for (int col = 0;col < Size; col++)
             {
-                this.board[row, col].SetPossibilities(state[row, col].GetPossibilities());
+                this.BoardGrid[row, col].SetPossibilities(state[row, col].GetPossibilities());
             }
         }
     }
@@ -393,19 +393,19 @@ public class SudokuBoard<T> : Board<T>
     /// <param name="boxes"></param>
     public void RestorePropertiesState(HashSet<T>[] rows, HashSet<T>[] cols, HashSet<T>[] boxes)
     {
-        for (int index = 0; index < this.rows.Length; index++)
+        for (int index = 0; index < this.Rows.Length; index++)
         {
-            this.rows[index] = new HashSet<T>(rows[index]);
+            this.Rows[index] = new HashSet<T>(rows[index]);
         }
 
-        for (int index = 0; index < this.cols.Length; index++)
+        for (int index = 0; index < this.Cols.Length; index++)
         {
-            this.cols[index] = new HashSet<T>(cols[index]);
+            this.Cols[index] = new HashSet<T>(cols[index]);
         }
 
-        for (int index = 0; index < this.boxes.Length; index++)
+        for (int index = 0; index < this.Boxes.Length; index++)
         {
-            this.boxes[index] = new HashSet<T>(boxes[index]);
+            this.Boxes[index] = new HashSet<T>(boxes[index]);
         }
     }
 

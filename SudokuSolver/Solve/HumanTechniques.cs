@@ -15,10 +15,12 @@ namespace SudokuSolver.Solve;
 /// <typeparam name="T"></typeparam>
 public class HumanTechniques<T> : ISolving<T>
 {
-    private SudokuBoard<T> sudokuBoard;
-    private int boxSize;
-    HashSet<T> possibilities;
-    private bool IsFirstRound;
+    private SudokuBoard<T> _sudokuBoard;
+    private int _boxSize;
+    private HashSet<T> _possibilities;
+    private bool _isFirstRound;
+    private int _minNumForSets = 2;
+    private int _maxNumForSets = 7;
 
     /// <summary>
     /// the function sets the sudoku board property.
@@ -27,10 +29,10 @@ public class HumanTechniques<T> : ISolving<T>
     /// <param name="sudokuBoard"> sudoku board class instance</param>
     public void SetBoard(SudokuBoard<T> sudokuBoard)
     {
-        this.sudokuBoard = sudokuBoard;
-        boxSize = sudokuBoard.GetBoxSize();
-        possibilities = sudokuBoard.CreatePossibilitySet();
-        IsFirstRound = true;
+        this._sudokuBoard = sudokuBoard;
+        _boxSize = sudokuBoard.GetBoxSize();
+        _possibilities = sudokuBoard.CreatePossibilitySet();
+        _isFirstRound = true;
     }
 
     /// <summary>
@@ -39,11 +41,11 @@ public class HumanTechniques<T> : ISolving<T>
     /// </summary>
     public bool Solve()
     {
-        if(sudokuBoard.IsBoardSolved())
+        if(_sudokuBoard.IsBoardSolved())
             return true;    
-        if (IsFirstRound)
+        if (_isFirstRound)
         {
-            IsFirstRound = false;
+            _isFirstRound = false;
             return SolveForFirstRound();
         }
         else
@@ -51,44 +53,54 @@ public class HumanTechniques<T> : ISolving<T>
             return SolveForBoards();
         }
     }
+    /// <summary>
+    /// the function solves the boards for the first round 
+    /// it means for the first time that the board is inputed , 
+    /// all the heuristics will be executed on the board.
+    /// </summary>
+    /// <returns></returns>
     private bool SolveForFirstRound()
     {
         bool didChange = false;
         bool changed = false;
-        if(sudokuBoard.Size == 9 )
+        if(_sudokuBoard.Size == 9 )
             changed =  ApplyNakedSets();
         Validation.ValidateBoard<T>.Validate(
-            sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
-        if (this.sudokuBoard.IsBoardSolved())
+            _sudokuBoard.BoardGrid, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
+        if (this._sudokuBoard.IsBoardSolved())
             return true;
         do
         {
-            changed = sudokuBoard.UpdateBoard()
+            changed = _sudokuBoard.UpdateBoard()
                  || LockedCandidatesBlockWithinRowOrCol()
                  || LockedCandidatesRowOrColWithinBox()
                  || HiddenSingle();
             didChange = didChange | changed;
             Validation.ValidateBoard<T>.Validate(
-             sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
-        } while (changed && !sudokuBoard.IsBoardSolved());
+             _sudokuBoard.BoardGrid, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
+        } while (changed && !_sudokuBoard.IsBoardSolved());
         return didChange;
     }
 
-   
+   /// <summary>
+   /// this function solves the board for each time 
+   /// and executes the hidden single heuristic with the update board.
+   /// </summary>
+   /// <returns></returns>
     private bool SolveForBoards()
     {
         bool didChange = false;
         bool changed = false;
-        if (this.sudokuBoard.IsBoardSolved())
+        if (this._sudokuBoard.IsBoardSolved())
             return true;
         do
         {    
-                changed = sudokuBoard.UpdateBoard()
+                changed = _sudokuBoard.UpdateBoard()
                     || HiddenSingle();
             didChange = didChange | changed;
             Validation.ValidateBoard<T>.Validate(
-             sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
-        } while (changed && !sudokuBoard.IsBoardSolved());
+             _sudokuBoard.BoardGrid, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
+        } while (changed && !_sudokuBoard.IsBoardSolved());
         return didChange;
     }
   
@@ -101,11 +113,11 @@ public class HumanTechniques<T> : ISolving<T>
     /// <returns> returns true if changes were made </returns>
     private bool LockedCandidatesBlockWithinRowOrCol()
     {
-        HashSet<T> allPossibilities = sudokuBoard.CreatePossibilitySet();
+        HashSet<T> allPossibilities = _sudokuBoard.CreatePossibilitySet();
         bool didChangeRow = false;
         bool didChangeCol = false;
 
-        for (int row = 0; row < sudokuBoard.Size; row++)
+        for (int row = 0; row < _sudokuBoard.Size; row++)
         {
             foreach (T candidate in allPossibilities)
             {
@@ -129,10 +141,10 @@ public class HumanTechniques<T> : ISolving<T>
         Dictionary<int, List<int>> RowAndCols = new Dictionary<int, List<int>>();
         Dictionary<int, List<int>> ColsAndRows = new Dictionary<int, List<int>>();
 
-        for (int col = 0; col < sudokuBoard.Size; col++)
+        for (int col = 0; col < _sudokuBoard.Size; col++)
         {
-            if (!sudokuBoard.board[row, col].IsPermanent() &&
-                sudokuBoard.board[row, col].GetPossibilities().Contains(candidate))
+            if (!_sudokuBoard.BoardGrid[row, col].IsPermanent() &&
+                _sudokuBoard.BoardGrid[row, col].GetPossibilities().Contains(candidate))
             {
                 if (!RowAndCols.ContainsKey(row))
                 {
@@ -141,8 +153,8 @@ public class HumanTechniques<T> : ISolving<T>
                 RowAndCols[row].Add(col);
             }
 
-            if (!sudokuBoard.board[col, row].IsPermanent() &&
-                sudokuBoard.board[col, row].GetPossibilities().Contains(candidate))
+            if (!_sudokuBoard.BoardGrid[col, row].IsPermanent() &&
+                _sudokuBoard.BoardGrid[col, row].GetPossibilities().Contains(candidate))
             {
                 if (!ColsAndRows.ContainsKey(row))
                 {
@@ -168,22 +180,22 @@ public class HumanTechniques<T> : ISolving<T>
     /// <param name="didChangeRow"> boolean that represents if changes were made</param>
     private void LockedCandidatesBlockWithinRowHelperFunctionCondition(Dictionary<int, List<int>> RowAndCols, int row, T candidate, ref bool didChangeRow)
     {
-        if (RowAndCols.ContainsKey(row) && RowAndCols[row].Count >= 1 && RowAndCols[row].Count <= boxSize)
+        if (RowAndCols.ContainsKey(row) && RowAndCols[row].Count >= 1 && RowAndCols[row].Count <= _boxSize)
         {
-            int boxIndex = sudokuBoard.GetBoxIndex(row, RowAndCols[row][0]);
+            int boxIndex = _sudokuBoard.GetBoxIndex(row, RowAndCols[row][0]);
 
-            bool allInSameBox = RowAndCols[row].All(col => sudokuBoard.GetBoxIndex(row, col) == boxIndex);
+            bool allInSameBox = RowAndCols[row].All(col => _sudokuBoard.GetBoxIndex(row, col) == boxIndex);
 
             if (allInSameBox)
             {
-                List<(int row, int col)> cellsInBox = sudokuBoard.GetCellsInBox(boxIndex);
+                List<(int row, int col)> cellsInBox = _sudokuBoard.GetCellsInBox(boxIndex);
 
                 foreach (var cell in cellsInBox)
                 {
-                    if (cell.row != row && !sudokuBoard.board[cell.row, cell.col].IsPermanent() &&
-                        sudokuBoard.board[cell.row, cell.col].GetPossibilities().Contains(candidate))
+                    if (cell.row != row && !_sudokuBoard.BoardGrid[cell.row, cell.col].IsPermanent() &&
+                        _sudokuBoard.BoardGrid[cell.row, cell.col].GetPossibilities().Contains(candidate))
                     {
-                        if (!sudokuBoard.board[row, cell.col].GetPossibilities().Contains(candidate))
+                        if (!_sudokuBoard.BoardGrid[row, cell.col].GetPossibilities().Contains(candidate))
                         {
                             RemoveCellPossibilityAndUpdate(cell.row, cell.col, candidate);
                             didChangeRow = true;
@@ -205,20 +217,20 @@ public class HumanTechniques<T> : ISolving<T>
     /// <param name="didChangeCol"> boolean that represents if changes were made</param>
     private void LockedCandidatesBlockWithinColHelperFunctionCondition(Dictionary<int, List<int>> ColsAndRows, int col, T candidate, ref bool didChangeCol)
     {
-        if (ColsAndRows.ContainsKey(col) && ColsAndRows[col].Count >= 1 && ColsAndRows[col].Count <= boxSize && sudokuBoard.cols[col].Contains(candidate))
+        if (ColsAndRows.ContainsKey(col) && ColsAndRows[col].Count >= 1 && ColsAndRows[col].Count <= _boxSize && _sudokuBoard.Cols[col].Contains(candidate))
         {
-            int boxIndex = sudokuBoard.GetBoxIndex(ColsAndRows[col][0], col);
-            bool allInSameBox = ColsAndRows[col].All(row => sudokuBoard.GetBoxIndex(row, col) == boxIndex);
+            int boxIndex = _sudokuBoard.GetBoxIndex(ColsAndRows[col][0], col);
+            bool allInSameBox = ColsAndRows[col].All(row => _sudokuBoard.GetBoxIndex(row, col) == boxIndex);
 
             if (allInSameBox)
             {
-                List<(int row, int col)> cellsInBox = sudokuBoard.GetCellsInBox(boxIndex);
+                List<(int row, int col)> cellsInBox = _sudokuBoard.GetCellsInBox(boxIndex);
                 foreach (var cell in cellsInBox)
                 {
-                    if (cell.col != col && !sudokuBoard.board[cell.row, cell.col].IsPermanent() &&
-                        sudokuBoard.board[cell.row, cell.col].GetPossibilities().Contains(candidate))
+                    if (cell.col != col && !_sudokuBoard.BoardGrid[cell.row, cell.col].IsPermanent() &&
+                        _sudokuBoard.BoardGrid[cell.row, cell.col].GetPossibilities().Contains(candidate))
                     {
-                        if (!sudokuBoard.board[cell.row, col].GetPossibilities().Contains(candidate))
+                        if (!_sudokuBoard.BoardGrid[cell.row, col].GetPossibilities().Contains(candidate))
                         {
                             RemoveCellPossibilityAndUpdate(cell.row, cell.col, candidate);
                             didChangeCol = true;
@@ -236,13 +248,13 @@ public class HumanTechniques<T> : ISolving<T>
     /// <param name="value"> possibility to remvoe</param>
     private void RemoveCellPossibilityAndUpdate(int row, int col, T value)
     {
-        if (sudokuBoard.board[row, col].GetPossibilities().Contains(value))
+        if (_sudokuBoard.BoardGrid[row, col].GetPossibilities().Contains(value))
         {
 
-            if (!sudokuBoard.board[row, col].RemovePossibility(value)) return;
-            if (sudokuBoard.board[row, col].IsPermanent())
+            if (!_sudokuBoard.BoardGrid[row, col].RemovePossibility(value)) return;
+            if (_sudokuBoard.BoardGrid[row, col].IsPermanent())
             {
-                sudokuBoard.RemoveValueFromPossibilities(row, col, sudokuBoard.board[row, col].GetValue());
+                _sudokuBoard.RemoveValueFromPossibilities(row, col, _sudokuBoard.BoardGrid[row, col].GetValue());
             }
         }
     }
@@ -258,15 +270,15 @@ public class HumanTechniques<T> : ISolving<T>
     {
         bool didChange = false;
 
-        for (int boxIndex = 0; boxIndex < sudokuBoard.Size; boxIndex++)
+        for (int boxIndex = 0; boxIndex < _sudokuBoard.Size; boxIndex++)
         {
-            foreach (T candidate in possibilities)
+            foreach (T candidate in _possibilities)
             {
                 List<(int row, int col)> candidateCells = new List<(int row, int col)>();
-                foreach ((int row, int col) in sudokuBoard.GetCellsInBox(boxIndex))
+                foreach ((int row, int col) in _sudokuBoard.GetCellsInBox(boxIndex))
                 {
-                    if (!sudokuBoard.board[row, col].IsPermanent() &&
-                        sudokuBoard.board[row, col].GetPossibilities().Contains(candidate))
+                    if (!_sudokuBoard.BoardGrid[row, col].IsPermanent() &&
+                        _sudokuBoard.BoardGrid[row, col].GetPossibilities().Contains(candidate))
                     {
                         candidateCells.Add((row, col));
                     }
@@ -299,11 +311,11 @@ public class HumanTechniques<T> : ISolving<T>
         if (groupedByRow.Count == 1 && groupedByRow[0].Count() == candidateCells.Count)
         {
             int lockedRow = groupedByRow[0].Key;
-            for (int col = 0; col < sudokuBoard.Size; col++)
+            for (int col = 0; col < _sudokuBoard.Size; col++)
             {
-                if (sudokuBoard.GetBoxIndex(lockedRow, col) != boxIndex)
+                if (_sudokuBoard.GetBoxIndex(lockedRow, col) != boxIndex)
                 {
-                    Cell<T> cell = sudokuBoard.board[lockedRow, col];
+                    Cell<T> cell = _sudokuBoard.BoardGrid[lockedRow, col];
                     if (!cell.IsPermanent() && cell.GetPossibilities().Contains(candidate))
                     {
                         RemoveCellPossibilityAndUpdate(lockedRow, col, candidate);
@@ -331,11 +343,11 @@ public class HumanTechniques<T> : ISolving<T>
         if (groupedByCol.Count == 1 && groupedByCol[0].Count() == candidateCells.Count)
         {
             int lockedCol = groupedByCol[0].Key;
-            for (int row = 0; row < sudokuBoard.Size; row++)
+            for (int row = 0; row < _sudokuBoard.Size; row++)
             {
-                if (sudokuBoard.GetBoxIndex(row, lockedCol) != boxIndex)
+                if (_sudokuBoard.GetBoxIndex(row, lockedCol) != boxIndex)
                 {
-                    Cell<T> cell = sudokuBoard.board[row, lockedCol];
+                    Cell<T> cell = _sudokuBoard.BoardGrid[row, lockedCol];
                     if (!cell.IsPermanent() && cell.GetPossibilities().Contains(candidate))
                     {
                         RemoveCellPossibilityAndUpdate(row, lockedCol, candidate);
@@ -360,7 +372,7 @@ public class HumanTechniques<T> : ISolving<T>
     private bool ApplyNakedSets()
     {
         bool didChange = false;
-        for (int SetSize = 2; SetSize < 7; SetSize++)
+        for (int SetSize = _minNumForSets; SetSize < _maxNumForSets; SetSize++)
            didChange |= NakedSet(SetSize);
         return didChange;
     }
@@ -374,7 +386,7 @@ public class HumanTechniques<T> : ISolving<T>
     private bool NakedSet(int SetSize)
     {
         bool didChange = false;
-        for (int location = 0; location < sudokuBoard.Size; location++)
+        for (int location = 0; location < _sudokuBoard.Size; location++)
         {
             if (NakedSetFind(GetRowCells(location), SetSize))
                 didChange = true;
@@ -465,9 +477,9 @@ public class HumanTechniques<T> : ISolving<T>
     private List<Cell<T>> GetRowCells(int row)
     {
         List<Cell<T>> cells = new List<Cell<T>>();
-        for (int col = 0; col < sudokuBoard.Size; col++)
+        for (int col = 0; col < _sudokuBoard.Size; col++)
         {
-            cells.Add(sudokuBoard.board[row, col]);
+            cells.Add(_sudokuBoard.BoardGrid[row, col]);
         }
         return cells;
     }
@@ -481,9 +493,9 @@ public class HumanTechniques<T> : ISolving<T>
     private List<Cell<T>> GetColumnCells(int col)
     {
         List<Cell<T>> cells = new List<Cell<T>>();
-        for (int row = 0; row < sudokuBoard.Size; row++)
+        for (int row = 0; row < _sudokuBoard.Size; row++)
         {
-            cells.Add(sudokuBoard.board[row, col]);
+            cells.Add(_sudokuBoard.BoardGrid[row, col]);
         }
         return cells;
     }
@@ -495,17 +507,25 @@ public class HumanTechniques<T> : ISolving<T>
     private List<Cell<T>> GetBoxCells(int boxIndex)
     {
         List<Cell<T>> cells = new List<Cell<T>>();
-        foreach ((int row, int col) in sudokuBoard.GetCellsInBox(boxIndex))
+        foreach ((int row, int col) in _sudokuBoard.GetCellsInBox(boxIndex))
         {
-            cells.Add(sudokuBoard.board[row, col]);
+            cells.Add(_sudokuBoard.BoardGrid[row, col]);
         }
         return cells;
     }
 
+    /// <summary>
+    /// main function for the hidden single, 
+    /// hidden singe - if in a certain row,col, or box , you have one possibility only for a option
+    /// than that option should be put as permenant for the cell holding that option. 
+    /// the function checks for each row col and box and calls the Helper function,
+    /// to check for each row col and box in the board.
+    /// </summary>
+    /// <returns> returns true if changes were made . </returns>
     private bool HiddenSingle()
     {
         bool didChange = false;
-        for (int location = 0; location < sudokuBoard.Size; location++)
+        for (int location = 0; location < _sudokuBoard.Size; location++)
         {
             if (HiddenSingleFind(GetRowCells(location)))
                 didChange = true;
@@ -516,14 +536,20 @@ public class HumanTechniques<T> : ISolving<T>
         }
         return didChange;
     }
-    private bool HiddenSingleFind(List<Cell<T>> Cells) 
+    /// <summary>
+    /// the function recieves a list of cells that represents a certain row/col/box 
+    /// and check if there is hidden single.
+    /// </summary>
+    /// <param name="Cells"></param>
+    /// <returns> returns true if changes were made.  </returns>
+    private bool HiddenSingleFind(List<Cell<T>> Cells)
     {
         bool didChange = false;
         int row = 0, col = 0;
-        int count = 0; 
+        int count = 0;
         bool flag = false;
 
-        foreach(T option in sudokuBoard.CreatePossibilitySet())
+        foreach (T option in _sudokuBoard.CreatePossibilitySet())
         {
             count = 0;
             flag = true;
@@ -531,16 +557,22 @@ public class HumanTechniques<T> : ISolving<T>
             {
                 if (cell.IsPermanent() && cell.GetValue().Equals(option))
                     flag = false;
-                if(!cell.IsPermanent() && cell.GetPossibilities().Contains(option))
+
+                if (!cell.IsPermanent() && cell.GetPossibilities().Contains(option))
                 {
                     count++;
-                    row = cell.GetRow();    
-                    col = cell.GetCol();    
+                    row = cell.GetRow();
+                    col = cell.GetCol();
                 }
             }
-            if(count == 1 && flag)
-                sudokuBoard.SetCellValue(row,col,option);     
+
+            if (count == 1 && flag)
+            {
+                _sudokuBoard.SetCellValue(row, col, option);
+                didChange = true;
+            }
         }
-        return false;
+        return didChange;
     }
+
 }

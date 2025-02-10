@@ -13,14 +13,12 @@ namespace SudokuTests;
 [TestFixture]
 public class Tests
 {
-    private HumanTechniques<int> _HumanTechniques;
-    private ComputerTechniques<int> _ComputerTechniques;
-    private SudokuBoard<int> _SudokuBoard;
-    private List<string> SudokusBoards;
-    private SudokuSolver.Validation.ValidateInput<int> validator;
-    private static int maxTimeForGrid = 1000;
-    private SolverManager<int> solver;
-    private Stopwatch stopwatch = new Stopwatch();
+    private HumanTechniques<int> _humanTechniques;
+    private ComputerTechniques<int> _computerTechniques;
+    private SudokuBoard<int> _sudokuBoard;
+    private static readonly int _maxTimeForGrid = 1000;
+    private SolverManager<int> _solver;
+    private Stopwatch _stopwatch = new Stopwatch();
 
     [SetUp]
     public void Setup()
@@ -30,24 +28,24 @@ public class Tests
 
     private void SetUpClasses(string input)
     {
-        _SudokuBoard = new SudokuBoard<int>(input);
-        _HumanTechniques = new HumanTechniques<int>();
-        _ComputerTechniques = new ComputerTechniques<int>();
-        solver = new SolverManager<int>(_SudokuBoard);
-        solver.AddTechnique(_HumanTechniques);
-        solver.AddTechnique(_ComputerTechniques);
+        _sudokuBoard = new SudokuBoard<int>(input);
+        _humanTechniques = new HumanTechniques<int>();
+        _computerTechniques = new ComputerTechniques<int>();
+        _solver = new SolverManager<int>(_sudokuBoard);
+        _solver.AddTechnique(_humanTechniques);
+        _solver.AddTechnique(_computerTechniques);
     }
 
     
     private void solve(string input , string expectedResult)
     {
-        stopwatch.Reset();
-        stopwatch.Start();
-        solver.SolveBoard();
-        stopwatch.Stop();
-        if (stopwatch.ElapsedMilliseconds > maxTimeForGrid && _SudokuBoard.Size<=16)
+        _stopwatch.Reset();
+        _stopwatch.Start();
+        _solver.SolveBoard();
+        _stopwatch.Stop();
+        if (_stopwatch.ElapsedMilliseconds > _maxTimeForGrid && _sudokuBoard.Size<=16)
             Assert.Fail("Took Too Long");
-        Assert.That(_SudokuBoard.BoardToString(), Is.EqualTo(expectedResult));
+        Assert.That(_sudokuBoard.BoardToString(), Is.EqualTo(expectedResult));
     }
 
 
@@ -148,6 +146,25 @@ public class Tests
     {
         string input = "009004070020197050700036004046900715078000900092301640005003087003060001200000300";
         string result = "839524176624197853751836294346982715178645932592371648965213487483769521217458369";
+        SetUpClasses(input);
+        solve(input, result);
+    }
+
+
+    [Test]
+    public void TestSolveEasyBoard11()
+    {
+        string input = "0";
+        string result = "1";
+        SetUpClasses(input);
+        solve(input, result);
+    }
+
+    [Test]
+    public void TestSolveEasyBoard12()
+    {
+        string input = "0000000000000000";
+        string result = "4321214334121234";
         SetUpClasses(input);
         solve(input, result);
     }
