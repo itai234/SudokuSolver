@@ -340,21 +340,18 @@ public class SudokuBoard<T> : Board<T>
     }
 
     /// <summary>
-    /// the function saves the board's state in a dictionary that it's key is an location in the board
-    /// and its value is the possiblities that location had . 
-    /// </summary>
+    /// the function saves the boards state with a copy of all the cells, and returns the matrix of the 
+    /// cells.
+    ///  </summary>
     /// <returns> returns the dictionary containing the possibilities of the board cells that are not permanent.</returns>
-    public Dictionary<(int row, int col), HashSet<T>> SaveBoardState()
+    public Cell<T>[,] SaveBoardState()
     {
-        Dictionary<(int row, int col), HashSet<T>> stateForBoard = new Dictionary<(int row, int col), HashSet<T>>();
+        Cell<T>[,] stateForBoard = new Cell<T>[Size,Size];
         for (int row = 0; row< Size; row++ )
         {
             for(int col = 0; col < Size; col++)
             {
-                if(!board[row, col].IsPermanent())
-                {
-                    stateForBoard[(row,col)] = board[row, col].GetPossibilities(); 
-                }
+                stateForBoard[row, col] = new Cell<T>(this.board[row, col].GetPossibilities(),row,col);
             }
         }
         return stateForBoard;
@@ -373,17 +370,18 @@ public class SudokuBoard<T> : Board<T>
         return boxes.Select(set => new HashSet<T>(set)).ToArray();
     }
     /// <summary>
-    /// the function restores the board state , with the state dictionary that it has as input ,
+    /// the function restores the board state , with the state cells matrix  that it has as input ,
     /// it restores each cell in it.
     /// </summary>
     /// <param name="state"> a certain board state represented by dictionary of location,possibilities.</param>
-    public void RestoreBoardState(Dictionary<(int row, int col), HashSet<T>> state)
+    public void RestoreBoardState(Cell<T>[,] state)
     {
-        foreach (var element in state)
+        for(int row = 0; row < Size; row++)
         {
-            var (row, col) = element.Key;
-            HashSet<T> possibilities = element.Value;
-            board[row, col].SetPossibilities(possibilities);
+            for (int col = 0;col < Size; col++)
+            {
+                this.board[row, col].SetPossibilities(state[row, col].GetPossibilities());
+            }
         }
     }
     /// <summary>

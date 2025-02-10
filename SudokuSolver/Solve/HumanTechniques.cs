@@ -82,19 +82,9 @@ public class HumanTechniques<T> : ISolving<T>
         if (this.sudokuBoard.IsBoardSolved())
             return true;
         do
-        {
-            if (this.sudokuBoard.Size <=9)
-                changed = sudokuBoard.UpdateBoard()
-                        || HiddenSingle();
-            if (this.sudokuBoard.Size == 16)
-                changed = sudokuBoard.UpdateBoard()
-                      || LockedCandidatesBlockWithinRowOrCol()
-                      || LockedCandidatesRowOrColWithinBox()
-                      || HiddenSingle();
-            if (this.sudokuBoard.Size > 16)
+        {    
                 changed = sudokuBoard.UpdateBoard()
                     || HiddenSingle();
-
             didChange = didChange | changed;
             Validation.ValidateBoard<T>.Validate(
              sudokuBoard.board, Utilities.SudokuBoardUtilities.GameStateForValidation.BaseBoardWithPossibilitiesFixed);
