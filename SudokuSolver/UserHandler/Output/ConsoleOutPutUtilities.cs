@@ -28,5 +28,9 @@ public static class ConsoleOutputUtilities
     public static readonly string ENTER_BOARD_MESSAGE = "Please Enter Your Board:";
     public static readonly string WANT_TO_SOLVE_MESSAGE = "Do You Wish To Solve The Board? If Yes, type \"Yes\"";
     public static readonly string BEFORE_BOARD_DISPLAY_MESSAGE = "Your Sudoku board:";
+
+    public static readonly string TITLE_MESSAGE = "\r\n  _____ _        _ _        _____           _       _             _____       _                \r\n |_   _| |      (_| )      / ____|         | |     | |           / ____|     | |               \r\n   | | | |_ __ _ _|/ ___  | (___  _   _  __| | ___ | | ___   _  | (___   ___ | |_   _____ _ __ \r\n   | | | __/ _` | | / __|  \\___ \\| | | |/ _` |/ _ \\| |/ / | | |  \\___ \\ / _ \\| \\ \\ / / _ \\ '__|\r\n  _| |_| || (_| | | \\__ \\  ____) | |_| | (_| | (_) |   <| |_| |  ____) | (_) | |\\ V /  __/ |   \r\n |_____|\\__\\__,_|_| |___/ |_____/ \\__,_|\\__,_|\\___/|_|\\_\\\\__,_| |_____/ \\___/|_| \\_/ \\___|_|   \r\n                                                                                               \r\n                                                                                               \r\n";
+
+
 }
 

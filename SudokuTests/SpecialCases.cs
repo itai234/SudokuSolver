@@ -7,6 +7,8 @@ using SudokuSolver.Solve;
 using SudokuSolver.DataStructures.Board;
 using SudokuSolver.Exceptions;
 using System.Diagnostics;
+using SudokuSolver.Solve.ComputerAlgorithm;
+using SudokuSolver.Solve.HumanHeuristics;
 
 namespace SudokuTests;
 /// <summary>

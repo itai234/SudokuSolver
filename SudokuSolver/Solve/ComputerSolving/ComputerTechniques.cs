@@ -1,5 +1,6 @@
 ﻿using SudokuSolver.DataStructures.Board;
 using SudokuSolver.Exceptions;
+using SudokuSolver.Solve.HumanHeuristics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SudokuSolver.Solve;
+namespace SudokuSolver.Solve.ComputerAlgorithm;
 
 /// <summary>
 ///  this class with represent the Computer Techniques to solve the board such as backTracking 
@@ -28,7 +29,7 @@ public class ComputerTechniques<T> : ISolving<T>
     /// <param name="sudokuBoard"></param>
     public void SetBoard(SudokuBoard<T> sudokuBoard)
     {
-        this._sudokuBoard = sudokuBoard;
+        _sudokuBoard = sudokuBoard;
         _humanTechniques = new HumanTechniques<T>();
         _humanTechniques.SetBoard(sudokuBoard);
     }
@@ -67,9 +68,9 @@ public class ComputerTechniques<T> : ISolving<T>
         Stack<T> orderedValues = GetValuesOrderedByPriority(row, col, cellPossibilities);
 
 
-        while (orderedValues.Count > 0) 
+        while (orderedValues.Count > 0)
         {
-            T value = orderedValues.Pop();  
+            T value = orderedValues.Pop();
             if (_sudokuBoard.CanPlaceValue(row, col, value))
             {
                 var savedState = _sudokuBoard.SaveBoardState();
@@ -122,7 +123,7 @@ public class ComputerTechniques<T> : ISolving<T>
                 if (!_sudokuBoard.BoardGrid[r, c].IsPermanent() &&
                     _sudokuBoard.BoardGrid[r, c].GetPossibilities().Contains(value))
                     constrainingCount++;
-             
+
             valueConstraints.Add((value, constrainingCount));
         }
 

@@ -3,6 +3,7 @@ using SudokuSolver.UserHandler.Output;
 using System;
 using System.IO;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace SudokuSolver.UserHandler;
 
@@ -17,6 +18,17 @@ public class Game
     /// </summary>
     public void StartGame()
     {
+        Console.ForegroundColor = ConsoleColor.Cyan;   
+        // this part just prints the title welcome message in the center of the screen
+        string[] lines = ConsoleOutputUtilities.TITLE_MESSAGE.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        int consoleWidth = Console.WindowWidth;
+
+        foreach (var line in lines)
+        {
+            int leftPadding = Math.Max((consoleWidth - line.Length) / 2, 0);
+            Console.WriteLine(new string(' ', leftPadding) + line);
+        }
+        Console.ResetColor();   
         Console.CancelKeyPress += (sender, cancel) =>
         {
             Console.WriteLine(ConsoleOutputUtilities.EXIT_MESSAGE);

@@ -1,6 +1,8 @@
 ﻿using SudokuSolver.DataStructures.Board;
 using SudokuSolver.Exceptions;
 using SudokuSolver.Solve;
+using SudokuSolver.Solve.ComputerAlgorithm;
+using SudokuSolver.Solve.HumanHeuristics;
 using SudokuSolver.UserHandler.Output;
 using System;
 using System.Diagnostics;
