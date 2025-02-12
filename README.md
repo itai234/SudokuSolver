@@ -100,7 +100,7 @@ If these methods don't solve the board, the solver switches to backtracking, whe
 - **After Each Option, The menu pop up will reappear, And you can choose again.**
 
 - **Pressing Two leads to entering a board through the cli:**
-1. **First Choose the board string you want And is legal according to the rules**
+1. **First Choose the board string you want And that is legal according to the rules**
 2. **enter it , and when you want to solve it write "yes"**
 3. **The board Can be either Solvable, Unsolvable, or Illegal and you will get an informative response.**
 - **Pressing Two and putting a legal and solvable board:**
