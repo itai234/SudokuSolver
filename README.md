@@ -125,10 +125,9 @@ If these methods don't solve the board, the solver switches to backtracking, whe
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/itai234/SudokuSolver.git
-2. **Unzip the File**
-3. **Open With Visual Studio ( 2022 recommended )**
-4. **Choose.NET version 8.0 on the project properties**
-5. **Click The RUN green button and enjoy**
+2. **Open With Visual Studio ( 2022 recommended ) For Both Projects- Testing,SudokusSolver**
+3. **Choose.NET version 8.0 on the project properties**
+4. **Click The RUN green button and enjoy**
 
 
 
