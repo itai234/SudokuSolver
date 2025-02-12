@@ -113,7 +113,7 @@ public static class ValidateBoard<T>
         switch (state)
         {
             case GameStateForValidation.BaseBoardInput:
-                throw new SameCharactersInBoxException($"Illegal Board. Cannot put same characters -- {value} -- in the same box.");
+                throw new SameCharactersInBoxException($"Illegal Board. Cannot put same characters -- {((char)(Convert.ToInt32(value) + 48)).ToString()} -- in the same box.");
             case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
                 throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
         }
@@ -130,7 +130,7 @@ public static class ValidateBoard<T>
         switch (state)
         {
             case GameStateForValidation.BaseBoardInput:
-                throw new SameCharactersInRowException($"Illegal Board. Cannot put same characters -- {value} -- in the same row.");
+                throw new SameCharactersInRowException($"Illegal Board. Cannot put same characters -- {((char)(Convert.ToInt32(value) + 48)).ToString()} -- in the same row.");
             case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
                 throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
         }
@@ -147,7 +147,7 @@ public static class ValidateBoard<T>
         switch (state)
         {
             case GameStateForValidation.BaseBoardInput:
-                throw new SameCharactersInColException($"Illegal Board. Cannot put same characters -- {value} -- in the same column.");
+                throw new SameCharactersInColException($"Illegal Board. Cannot put same characters -- {((char)(Convert.ToInt32(value) + 48)).ToString()} -- in the same column.");
             case GameStateForValidation.BaseBoardWithPossibilitiesFixed:
                 throw new UnsolvableBoardException($"The Board You Entered Is Invalid and Unsolvable.");
         }

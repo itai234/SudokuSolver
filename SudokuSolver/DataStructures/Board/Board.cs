@@ -111,17 +111,18 @@ public class Board<T>
         sb.Append("   ");
         sb.AppendLine(BuildLine(true, false, lineSegmentWidth));
 
-        for (int r = 0; r < Size; r++)
+        for (int row = 0; row < Size; row++)
         {
             sb.Append(" ");
-            sb.Append(rowLabels[r]);
+            sb.Append(rowLabels[row]);
             sb.Append(" ");
-            for (int c = 0; c < Size; c++)
+            for (int col = 0; col < Size; col++)
             {
-                if (c % boxSize == 0) sb.Append("║");
+                if (col % boxSize == 0) sb.Append("║");
                 else sb.Append("│");
 
-                var val = BoardGrid[r, c].IsPermanent() ? BoardGrid[r, c].GetValue().ToString() : "0";
+                int ch = Convert.ToInt32(BoardGrid[row, col].GetValue()) + 48;
+                var val = BoardGrid[row, col].IsPermanent() ? ((char)ch).ToString() : "0";
                 val = val.PadLeft(cellWidth, ' ');
                 sb.Append($" {val} ");
             }
@@ -129,9 +130,9 @@ public class Board<T>
             sb.AppendLine();
 
             sb.Append("   ");
-            if (r < Size - 1)
+            if (row < Size - 1)
             {
-                if ((r + 1) % boxSize == 0)
+                if ((row + 1) % boxSize == 0)
                 {
                     sb.AppendLine(BuildLine(false, false, lineSegmentWidth, thick: true));
                 }
@@ -202,7 +203,8 @@ public class Board<T>
         {
             for(int col = 0; col < Size; col++)
             {
-                result += BoardGrid[row, col].IsPermanent() ? BoardGrid[row, col].GetValue() : 0;
+                int ch = Convert.ToInt32(BoardGrid[row, col].GetValue()) + 48;
+                result += BoardGrid[row, col].IsPermanent() ?  ((char)ch).ToString() : "0";
             }
         }
         return result;  

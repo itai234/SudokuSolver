@@ -83,6 +83,7 @@ public abstract class InputReader
             Console.WriteLine($"Took {time} miliseconds");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine(_board.DisplayBoard());
+            //Console.WriteLine("\n" + _board.BoardToString());
             Console.ResetColor();
             Console.WriteLine();
         }
