@@ -79,11 +79,12 @@ public abstract class InputReader
             stopwatch.Stop();
             var time = stopwatch.ElapsedMilliseconds;
             Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Solved The Board!");
+            Console.ResetColor();
             Console.WriteLine($"Took {time} miliseconds");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine(_board.DisplayBoard());
-            //Console.WriteLine("\n" + _board.BoardToString());
             Console.ResetColor();
             Console.WriteLine();
         }

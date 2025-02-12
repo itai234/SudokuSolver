@@ -29,6 +29,8 @@ public class Game
             Console.WriteLine(new string(' ', leftPadding) + line);
         }
         Console.ResetColor();   
+
+
         Console.CancelKeyPress += (sender, cancel) =>
         {
             Console.WriteLine(ConsoleOutputUtilities.EXIT_MESSAGE);
@@ -46,23 +48,35 @@ public class Game
             }
             catch (EndOfStreamException)
             {
+                Console.ForegroundColor= ConsoleColor.Red; 
                 Console.WriteLine("Try again.");
+                Console.ResetColor();
             }
             catch (ThreadInterruptedException)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Try again.");
+                Console.ResetColor();
+
             }
             catch (IOException)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Try again.");
+                Console.ResetColor();
+
             }
             catch (ArgumentOutOfRangeException)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Input too long");
+                Console.ResetColor();
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(ex.Message);
+                Console.ResetColor();
             }
         }
     }

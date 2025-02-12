@@ -27,27 +27,39 @@ public static class FileWriter
         }
         catch (UnauthorizedAccessException)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Access to the file is denied.");
+            Console.ResetColor();   
         }
         catch (DirectoryNotFoundException)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("The directory was not found.");
+            Console.ResetColor();
         }
         catch (IOException)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("An I/O error occurred while writing the file.");
+            Console.ResetColor();
         }
         catch (ArgumentException)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("The file path is invalid.");
+            Console.ResetColor();
         }
         catch (NotSupportedException)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("The provided file path is not supported.");
+            Console.ResetColor();
         }
         catch (Exception ex)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+            Console.ResetColor();
         }
     }
 }

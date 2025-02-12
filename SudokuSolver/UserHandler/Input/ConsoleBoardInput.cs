@@ -18,31 +18,42 @@ public class ConsoleBoardInput : InputReader
     /// which is the general Input reader that handles validation of the input and solving the board.
     /// </summary>
     public override void ReadInput()
-    {
-        Console.WriteLine(ConsoleOutputUtilities.ENTER_BOARD_MESSAGE);
-        string input = Console.ReadLine();
-        input = input.Replace(" ", "");
-        Console.WriteLine(ConsoleOutputUtilities.WANT_TO_SOLVE_MESSAGE);
-        string answer = Console.ReadLine();
-        answer = answer.ToLower();
-        switch (answer)
+    { 
+        try
         {
-            case "yes":
-                try
-                {
-                    ValidateInput(input);
-                    AddTechniques();
-                    Solve();
-                }
-                catch
-                {
-                }
-                break;
-            default:
-                break;
-            
+            Console.WriteLine(ConsoleOutputUtilities.ENTER_BOARD_MESSAGE);
+            string input = Console.ReadLine();
+            input = input.Replace(" ", "");
+            Console.WriteLine(ConsoleOutputUtilities.WANT_TO_SOLVE_MESSAGE);
+            string answer = Console.ReadLine();
+            answer = answer.ToLower();
+            switch (answer)
+            {
+                case "yes":
+                    try
+                    {
+                        ValidateInput(input);
+                        AddTechniques();
+                        Solve();
+                    }
+                    catch
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid Input");
+                        Console.ResetColor();
+                    }
+                    break;
+                default:
+                    break;
+
+            }
         }
-       
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Invalid Input");
+            Console.ResetColor();   
+        }
     }
 }
 

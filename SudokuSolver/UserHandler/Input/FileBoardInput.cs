@@ -27,9 +27,9 @@ public class FileBoardInput : InputReader
     public override void ReadInput()
     {
         Console.WriteLine(ConsoleOutputUtilities.ENTER_FILE_PATH_MESSAGE);
-        path = Console.ReadLine();
         try
         {
+            path = Console.ReadLine();
             _usersInput = ReadFile();
         }
         catch (Exception ex)
